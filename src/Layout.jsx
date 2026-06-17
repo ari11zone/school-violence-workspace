@@ -48,12 +48,12 @@ export default function Layout() {
       <nav className="fixed left-0 top-16 h-[calc(100vh-4rem)] flex flex-col z-40 bg-primary-container w-60 shadow-lg border-r border-primary/20">
         <div className="px-4 py-5 border-b border-primary/20">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
+            <div className="w-8 h-8 bg-white/10 rounded flex items-center justify-center">
               <span className="material-symbols-outlined text-white text-[16px]">gavel</span>
             </div>
             <div>
-              <p className="text-primary font-bold text-sm">사안처리 단계</p>
-              <p className="text-on-surface-variant text-xs">5단계 프로세스</p>
+              <p className="text-white font-bold text-sm">사안처리 단계</p>
+              <p className="text-white/50 text-xs">5단계 프로세스</p>
             </div>
           </div>
         </div>
@@ -68,15 +68,15 @@ export default function Layout() {
                 className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-150 group
                   ${active
                     ? 'bg-primary text-white shadow-md'
-                    : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white'
                   }`}
               >
-                <span className={`material-symbols-outlined text-[20px] transition-all ${active ? 'text-white' : 'text-primary group-hover:text-primary'}`}>
+                <span className={`material-symbols-outlined text-[20px] transition-all ${active ? 'text-white' : 'text-white/50 group-hover:text-white'}`}>
                   {icon}
                 </span>
                 <span>{label}</span>
                 {step && (
-                  <span className={`ml-auto text-xs px-1.5 py-0.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'}`}>
+                  <span className={`ml-auto text-xs px-1.5 py-0.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-white/10 text-white/70'}`}>
                     {step}단계
                   </span>
                 )}
@@ -86,16 +86,16 @@ export default function Layout() {
         </div>
 
         <div className="px-3 py-4 border-t border-primary/20">
-          <div className="bg-error-container/30 rounded-xl p-3">
+          <div className="bg-error-container/20 border border-error/30 rounded-xl p-3">
             <div className="flex items-center gap-2 mb-1">
-              <span className="material-symbols-outlined text-error text-[16px]">schedule</span>
-              <span className="text-error text-xs font-bold">법정 기한 안내</span>
+              <span className="material-symbols-outlined text-red-400 text-[16px]">schedule</span>
+              <span className="text-red-400 text-xs font-bold">법정 기한 안내</span>
             </div>
-            <p className="text-on-surface-variant text-xs leading-relaxed">
-              사안 인지 후 <span className="font-bold text-error">48시간 이내</span> 교육지원청 보고 완료 필수
+            <p className="text-white/80 text-xs leading-relaxed">
+              사안 인지 후 <span className="font-bold text-red-400">48시간 이내</span> 교육지원청 보고 완료 필수
             </p>
           </div>
-          <button className="w-full flex items-center gap-2 px-3 py-2 mt-3 text-on-surface-variant hover:text-error hover:bg-error/5 rounded-lg text-sm transition-all">
+          <button className="w-full flex items-center gap-2 px-3 py-2 mt-3 text-white/60 hover:text-red-400 hover:bg-white/5 rounded-lg text-sm transition-all">
             <span className="material-symbols-outlined text-[18px]">logout</span>
             로그아웃
           </button>
