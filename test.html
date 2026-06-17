@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Administrative Precision System - Final Report Packaging</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001d35",
+                        "tertiary-fixed": "#dee0ff",
+                        "surface-tint": "#446180",
+                        "surface-container-highest": "#cfe6f2",
+                        "secondary-fixed-dim": "#c3c7cb",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#899aff",
+                        "on-secondary-container": "#5e6367",
+                        "surface": "#f3faff",
+                        "on-primary-fixed-variant": "#2b4967",
+                        "outline-variant": "#c3c7ce",
+                        "secondary-fixed": "#dfe3e7",
+                        "primary-fixed-dim": "#acc9ed",
+                        "on-surface": "#071e27",
+                        "primary-container": "#1b3a57",
+                        "surface-container-low": "#e6f6ff",
+                        "tertiary": "#00156e",
+                        "primary": "#002440",
+                        "surface-container-high": "#d5ecf8",
+                        "on-secondary-fixed-variant": "#43474b",
+                        "surface-container": "#dbf1fe",
+                        "on-primary-fixed": "#001d35",
+                        "background": "#f3faff",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#d0e4ff",
+                        "outline": "#73777e",
+                        "on-tertiary-fixed-variant": "#293ca0",
+                        "inverse-on-surface": "#dff4ff",
+                        "on-surface-variant": "#43474d",
+                        "secondary": "#5a5f62",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f3faff",
+                        "tertiary-container": "#162b91",
+                        "on-primary": "#ffffff",
+                        "on-background": "#071e27",
+                        "tertiary-fixed-dim": "#bac3ff",
+                        "inverse-surface": "#1e333c",
+                        "surface-variant": "#cfe6f2",
+                        "secondary-container": "#dce0e4",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#c7dde9",
+                        "on-secondary-fixed": "#171c1f",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#acc9ed",
+                        "on-tertiary-fixed": "#00105c",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "sm": "16px",
+                        "gutter": "24px",
+                        "lg": "32px",
+                        "md": "24px",
+                        "base": "4px",
+                        "container-max": "1280px",
+                        "xl": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Noto Sans"],
+                        "display-lg": ["Noto Sans"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Noto Sans"],
+                        "data-table": ["Inter"],
+                        "body-md": ["Noto Sans"],
+                        "body-lg": ["Noto Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "data-table": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f3faff;
+            font-family: 'Noto Sans', sans-serif;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid #D1D9E0;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c3c7ce;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-lg h-16 bg-surface dark:bg-on-background border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Administrative Precision System</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="relative">
+<span class="material-symbols-outlined text-secondary absolute left-3 top-1/2 -translate-y-1/2">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="검색어 입력..." type="text"/>
+</div>
+<button class="p-2 hover:bg-secondary-container rounded-full transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<button class="p-2 hover:bg-secondary-container rounded-full transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-primary">help_outline</span>
+</button>
+<div class="flex items-center gap-2 ml-4">
+<img alt="Administrator Profile" class="w-8 h-8 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGOiuiNEdWQs5wLkMTTEVitK9owYeasGv_SXylz5YJ1pK4PUPJyc-iuB_-wXnwBxIuwZgHt4DNEYWOIP9eBIqDEzLSM5FOrqUn1rpzMsqQ-hg7ZJemSBd2QY360_2Qzbl92FzshRYszW97LocbAkhJeNUrzroAlL92sgS8vcy93JNe-GPKPCTd5YHpsK9AfockSF3WWImAfAv8l4TPciTRw1jql4I_Rl8JDEetPjT3wi8wSERBEwybliqXAGpmtbgjnTwLqI9VkoMO"/>
+<span class="font-label-md text-label-md text-on-surface">관리자</span>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full flex flex-col py-md z-40 bg-primary dark:bg-primary-container w-64 shadow-md pt-20">
+<div class="px-md mb-xl">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-on-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">gavel</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-primary">Case Manager</h2>
+<p class="font-label-md text-label-md text-primary-fixed-dim">Education Office</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-on-primary-fixed-variant transition-all mx-2 rounded-lg font-label-md text-label-md duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container dark:bg-primary-fixed text-on-primary-container dark:text-on-primary-fixed font-bold border-b-2 border-primary mx-2 rounded-lg font-label-md text-label-md duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined">gavel</span> Case History
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-on-primary-fixed-variant transition-all mx-2 rounded-lg font-label-md text-label-md duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined">menu_book</span> Manuals
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-on-primary-fixed-variant transition-all mx-2 rounded-lg font-label-md text-label-md duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+</div>
+<div class="mt-auto px-2">
+<button class="w-full flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-on-primary-fixed-variant transition-all rounded-lg font-label-md text-label-md duration-150 active:scale-95">
+<span class="material-symbols-outlined">logout</span> Logout
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-20 p-gutter min-h-screen">
+<div class="max-w-[1280px] mx-auto">
+<!-- Breadcrumbs & Status -->
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h1 class="font-display-lg text-display-lg text-primary">사안 보고서 패키징 및 최종 제출</h1>
+<p class="font-body-md text-body-md text-secondary mt-1">사안 번호: 2024-EDU-0012 | 담당자: 김관리 장학사</p>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-surface-container-high text-primary rounded-full font-label-md text-label-md flex items-center gap-1 border border-outline-variant">
+<span class="material-symbols-outlined text-[16px]">sync</span> 검토 대기중
+                    </span>
+<span class="px-3 py-1 bg-tertiary-fixed text-tertiary rounded-full font-label-md text-label-md flex items-center gap-1 border border-tertiary-container">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span> 학교장 결재 완료
+                    </span>
+</div>
+</div>
+<!-- Stepper -->
+<div class="flex items-center w-full mb-xl px-xl">
+<div class="flex items-center gap-2 flex-1">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<span class="text-primary font-bold">정보 입력</span>
+<div class="flex-1 h-[2px] bg-primary mx-4"></div>
+</div>
+<div class="flex items-center gap-2 flex-1">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<span class="text-primary font-bold">검증 및 확인</span>
+<div class="flex-1 h-[2px] bg-primary mx-4"></div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center text-primary font-bold">3</div>
+<span class="text-primary font-bold">최종 보고서 패키징</span>
+</div>
+</div>
+<!-- Bento Layout Content -->
+<div class="bento-grid">
+<!-- Left: Document List & Packaging (8 columns) -->
+<div class="col-span-8 flex flex-col gap-gutter">
+<!-- Export Card -->
+<section class="glass-card rounded-xl p-lg shadow-sm">
+<div class="flex justify-between items-start mb-md">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">패키지 포함 문서 목록</h3>
+<p class="font-body-md text-body-md text-secondary">수집된 모든 문서를 통합하여 교육지원청 제출용 PDF 패키지를 생성합니다.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[32px]">inventory_2</span>
+</div>
+<div class="space-y-sm mb-lg">
+<!-- Document Items -->
+<div class="flex items-center justify-between p-sm bg-surface-container rounded-lg border border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">description</span>
+<div>
+<p class="font-body-lg text-body-lg font-bold">최종 조사 결과 보고서 (v1.2)</p>
+<p class="font-label-md text-label-md text-on-secondary-container">2024.05.20 14:30 생성 | PDF (2.4MB)</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-tertiary-fixed-dim bg-tertiary-container px-2 py-1 rounded text-[11px] font-bold">필수</span>
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined">visibility</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between p-sm bg-surface-container rounded-lg border border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">groups</span>
+<div>
+<p class="font-body-lg text-body-lg font-bold">학생 진술서 (피해학생/가해학생)</p>
+<p class="font-label-md text-label-md text-on-secondary-container">2024.05.18 스캔 완료 | 2개 파일 합본</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-tertiary-fixed-dim bg-tertiary-container px-2 py-1 rounded text-[11px] font-bold">필수</span>
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined">visibility</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between p-sm bg-surface-container rounded-lg border border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">image</span>
+<div>
+<p class="font-body-lg text-body-lg font-bold">증빙 사진 및 물적 증거 목록</p>
+<p class="font-label-md text-label-md text-on-secondary-container">현장 사진 4매, 관련 대화 내용 캡처 2매</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-secondary-fixed-dim bg-secondary px-2 py-1 rounded text-[11px] font-bold text-white">선택</span>
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined">visibility</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between p-sm bg-surface-container rounded-lg border border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">assignment_turned_in</span>
+<div>
+<p class="font-body-lg text-body-lg font-bold">보호자 동의서 및 통지서 수령증</p>
+<p class="font-label-md text-label-md text-on-secondary-container">양측 보호자 4인 서명 확인됨</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-tertiary-fixed-dim bg-tertiary-container px-2 py-1 rounded text-[11px] font-bold">필수</span>
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined">visibility</span></button>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-sm">
+<button class="w-full bg-primary text-on-primary py-4 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-md active:scale-[0.98]">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+                                교육지원청 제출용 단일 PDF 패키지 내보내기
+                            </button>
+<div class="flex gap-sm">
+<button class="flex-1 border border-primary text-primary py-3 rounded-lg font-body-lg text-body-lg flex items-center justify-center gap-2 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">print</span> 일괄 인쇄
+                                </button>
+<button class="flex-1 border border-primary text-primary py-3 rounded-lg font-body-lg text-body-lg flex items-center justify-center gap-2 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">archive</span> 원본 ZIP 다운로드
+                                </button>
+</div>
+</div>
+</section>
+<!-- Summary Info -->
+<div class="grid grid-cols-2 gap-gutter">
+<div class="glass-card p-md rounded-xl">
+<h4 class="font-label-md text-label-md text-secondary uppercase mb-2">보안 설정</h4>
+<div class="flex items-center gap-3 p-3 bg-error-container rounded-lg border border-error/20">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+<div>
+<p class="text-error font-bold text-body-md">개인정보 마스킹 활성화</p>
+<p class="text-on-error-container text-[12px]">제출용 문서에서 주민등록번호 뒷자리가 자동 마스킹됩니다.</p>
+</div>
+</div>
+</div>
+<div class="glass-card p-md rounded-xl">
+<h4 class="font-label-md text-label-md text-secondary uppercase mb-2">최종 결재자 정보</h4>
+<div class="flex items-center gap-3">
+<img alt="Principal" class="w-10 h-10 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSjqQqbHnDmEC-BtSv32BUDz2-MvqXFr89Q189nO0nD0aw93FEOa2l0wD5-0D-Dw8UIrrFSxJsyCKQu52mz_XcQ2fxFz1AhGAZs3BHOBMBiFaypLYCEgk-SA9-YAKI5ZNlIx1494Yqc2jZbz683RuKo-aO3z95SmDqHK1CBy78iv7CXi2o_HzGCd4shEyxgo2qyHvFeh6v1WpB_tKI4B6eOFegf02SoOGQP-0Oa5XBLVU3AD8QQbsRkTvVpxgD2Yxo-wwBBoeWeEvF"/>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">이학교 교장 (확인 완료)</p>
+<p class="text-label-md text-label-md text-secondary">2024.05.21 09:15 디지털 서명됨</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Hierarchy Preview (4 columns) -->
+<aside class="col-span-4">
+<div class="glass-card rounded-xl overflow-hidden sticky top-24">
+<div class="bg-primary-container p-md">
+<h3 class="text-on-primary-container font-headline-sm text-headline-sm">보고서 구조 미리보기</h3>
+<p class="text-on-primary-container/80 text-[12px] mt-1">PDF 패키지 내 페이지 레이아웃</p>
+</div>
+<div class="p-md bg-white h-[600px] overflow-y-auto custom-scrollbar">
+<div class="border-l-2 border-outline-variant ml-2 space-y-4">
+<!-- Root -->
+<div class="relative pl-6">
+<div class="absolute w-4 h-4 bg-primary rounded-full -left-[9px] top-1"></div>
+<p class="font-bold text-primary text-body-md">00. 표지 및 목차</p>
+<p class="text-secondary text-[12px]">1 Page</p>
+</div>
+<div class="relative pl-6">
+<div class="absolute w-3 h-3 bg-primary rounded-full -left-[6px] top-1"></div>
+<p class="font-bold text-primary text-body-md">01. 사안 조사 보고서</p>
+<div class="mt-2 space-y-2 border-l border-outline-variant pl-4">
+<p class="text-on-surface text-body-md">1.1 사안의 개요</p>
+<p class="text-on-surface text-body-md">1.2 관련자 인적사항</p>
+<p class="text-on-surface text-body-md">1.3 조사 일시 및 장소</p>
+<p class="text-on-surface text-body-md">1.4 상세 조사 내용</p>
+</div>
+<p class="text-secondary text-[12px] mt-1">12 Pages</p>
+</div>
+<div class="relative pl-6">
+<div class="absolute w-3 h-3 bg-outline-variant rounded-full -left-[6px] top-1"></div>
+<p class="font-bold text-on-surface-variant text-body-md">02. 진술서 및 증빙자료</p>
+<div class="mt-2 space-y-2 border-l border-outline-variant pl-4">
+<p class="text-on-surface text-body-md">2.1 피해학생 진술서</p>
+<p class="text-on-surface text-body-md">2.2 가해학생 진술서</p>
+<p class="text-on-surface text-body-md">2.3 목격자 및 참고인 진술</p>
+<p class="text-on-surface text-body-md">2.4 물적 증빙 (사진/메시지)</p>
+</div>
+<p class="text-secondary text-[12px] mt-1">18 Pages</p>
+</div>
+<div class="relative pl-6">
+<div class="absolute w-3 h-3 bg-outline-variant rounded-full -left-[6px] top-1"></div>
+<p class="font-bold text-on-surface-variant text-body-md">03. 행정 서식</p>
+<div class="mt-2 space-y-2 border-l border-outline-variant pl-4">
+<p class="text-on-surface text-body-md">3.1 긴급 조치 통보서</p>
+<p class="text-on-surface text-body-md">3.2 학교장 자체해결 여부</p>
+<p class="text-on-surface text-body-md">3.3 개인정보 수집 동의서</p>
+</div>
+<p class="text-secondary text-[12px] mt-1">6 Pages</p>
+</div>
+<div class="relative pl-6">
+<div class="absolute w-4 h-4 bg-primary-fixed-dim rounded-full -left-[9px] top-1 border-2 border-primary"></div>
+<p class="font-bold text-primary text-body-md">TOTAL: 37 Pages</p>
+<p class="text-secondary text-[12px]">예상 파일 크기: 8.5MB</p>
+</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-low border-t border-outline-variant text-center">
+<p class="text-[12px] text-secondary">마지막 미리보기 생성: 1분 전</p>
+<button class="mt-2 text-primary text-[13px] font-bold hover:underline">미리보기 강제 새로고침</button>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simple ripple-like effect on primary buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', function(e) {
+                this.classList.add('opacity-80');
+                setTimeout(() => this.classList.remove('opacity-80'), 150);
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-[1.02]');
+            searchInput.parentElement.style.transition = 'transform 0.2s ease';
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-[1.02]');
+        });
+    </script>
+</body></html>
