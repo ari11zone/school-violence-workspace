@@ -1,3 +1,6 @@
+import forms from '@tailwindcss/forms';
+import containerQueries from '@tailwindcss/container-queries';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -30,7 +33,6 @@ export default {
           "surface-container-high": "#d5ecf8",
           "on-secondary-fixed-variant": "#43474b",
           "surface-container": "#dbf1fe",
-          "on-primary-fixed": "#001d35",
           "background": "#f3faff",
           "error": "#ba1a1a",
           "primary-fixed": "#d0e4ff",
@@ -93,7 +95,7 @@ export default {
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/container-queries')
+    forms,
+    containerQueries,
   ],
 }

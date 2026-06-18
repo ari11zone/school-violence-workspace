@@ -1,4 +1,3 @@
-import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useCase } from './context/CaseContext';
 
@@ -37,13 +36,9 @@ export default function Layout() {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-white/70 text-sm">{today}</span>
-          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-            <span className="material-symbols-outlined text-white text-[18px]">account_circle</span>
-          </div>
-          <span className="text-white text-sm font-medium">담당 교사</span>
-          <Link to="/admin" className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/25 text-white rounded-xl text-xs font-bold transition-all ml-1">
-            <span className="material-symbols-outlined text-[16px]">admin_panel_settings</span>
-            관리자
+          <Link to="/admin" className="flex items-center gap-2 px-4 py-2 bg-white/15 hover:bg-white/30 text-white rounded-xl text-sm font-bold transition-all border border-white/20 ml-2">
+            <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+            관리자 페이지
           </Link>
         </div>
       </header>

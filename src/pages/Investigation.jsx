@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
 
@@ -23,7 +23,7 @@ function StepProgress({ current }) {
   return (
     <div className="flex items-center justify-center mb-8">
       {steps.map((s, i) => (
-        <React.Fragment key={s}>
+        <Fragment key={s}>
           <div className="flex flex-col items-center">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all
               ${i < current ? 'bg-primary text-white' : i === current ? 'border-2 border-primary text-primary bg-white' : 'border-2 border-outline-variant text-on-surface-variant bg-white'}`}>
@@ -34,7 +34,7 @@ function StepProgress({ current }) {
           {i < steps.length - 1 && (
             <div className={`flex-1 h-0.5 mx-2 mb-4 ${i < current ? 'bg-primary' : 'bg-outline-variant'}`} />
           )}
-        </React.Fragment>
+        </Fragment>
       ))}
     </div>
   );
@@ -66,24 +66,27 @@ export default function Investigation() {
   const [showEvidenceInput, setShowEvidenceInput] = useState(false);
   const [evidenceName, setEvidenceName] = useState('');
   const [evidenceType, setEvidenceType] = useState('사진');
-  const [selectedFile, setSelectedFile] = useState(null);
+  const selectedFileRef = useRef(null);
   const [selectedFileUrl, setSelectedFileUrl] = useState('');
   const [previewItem, setPreviewItem] = useState(null);
 
-
   // Ensure there is a current case
+  const initRef = useRef(false);
   useEffect(() => {
-    if (!currentCase) {
+    if (!initRef.current && !currentCase) {
+      initRef.current = true;
       const id = createCase();
       selectCase(id);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Sync form when case changes
   useEffect(() => {
-    if (currentCase) {
-      setForm(currentCase.investigation);
-    }
-  }, [currentCase]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (currentCase) setForm(currentCase.investigation);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCase?.id]);
 
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
@@ -130,7 +133,7 @@ export default function Investigation() {
     const file = e.target.files[0];
     if (!file) return;
 
-    setSelectedFile(file);
+    selectedFileRef.current = file;
     setEvidenceName(file.name);
 
     // 확장자 기반 유형 자동 매핑
@@ -164,7 +167,7 @@ export default function Investigation() {
     };
     set('evidences', [...(form.evidences || []), ev]);
     setEvidenceName('');
-    setSelectedFile(null);
+    selectedFileRef.current = null;
     setSelectedFileUrl('');
     setShowEvidenceInput(false);
     showToast('증거 자료가 추가되었습니다.');
@@ -407,7 +410,7 @@ export default function Investigation() {
               <div className="flex gap-2 justify-end">
                 <button onClick={() => {
                   setShowEvidenceInput(false);
-                  setSelectedFile(null);
+                  selectedFileRef.current = null;
                   setSelectedFileUrl('');
                 }} className="px-4 py-2 border border-outline-variant rounded-xl text-sm">취소</button>
                 <button onClick={addEvidence} className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold">추가</button>

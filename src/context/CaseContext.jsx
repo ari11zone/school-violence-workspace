@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 const CaseContext = createContext(null);
 
@@ -310,4 +310,5 @@ export function CaseProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCase = () => useContext(CaseContext);

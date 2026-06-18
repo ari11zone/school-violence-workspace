@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
 
@@ -20,7 +20,6 @@ export default function Admin() {
     toggleAllowCaseRegistration,
     toggleLockCase,
     clearClosedCases,
-    resetCases,
     createCase,
     selectCase,
     showToast,

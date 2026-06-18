@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
 
@@ -43,7 +43,9 @@ export default function Statements() {
   });
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (currentCase) setForm(currentCase.statements);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCase?.id]);
 
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));

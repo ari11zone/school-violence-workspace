@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
 
@@ -12,24 +12,9 @@ const statusConfig = {
 
 const violenceTypes = ['언어폭력', '신체폭력', '사이버불링', '금품갈취', '강요·협박', '성폭력', '따돌림', '기타'];
 
-function StepBadge({ status }) {
-  const stages = ['investigation', 'statements', 'deliberation', 'packaging', 'closed'];
-  const idx = stages.indexOf(status);
-  return (
-    <div className="flex items-center gap-1">
-      {stages.slice(0, 4).map((s, i) => (
-        <React.Fragment key={s}>
-          <div className={`w-2 h-2 rounded-full ${i <= idx ? 'bg-primary' : 'bg-outline-variant'}`} />
-          {i < 3 && <div className={`w-4 h-0.5 ${i < idx ? 'bg-primary' : 'bg-outline-variant'}`} />}
-        </React.Fragment>
-      ))}
-    </div>
-  );
-}
-
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { cases, createCase, selectCase, showToast, updateInvestigation, deleteCase } = useCase();
+  const { cases, createCase, selectCase, showToast, deleteCase, allowCaseRegistration } = useCase();
   const [showNewModal, setShowNewModal] = useState(false);
   const [newType, setNewType] = useState('');
   const [newVictim, setNewVictim] = useState('');
@@ -44,7 +29,7 @@ export default function Dashboard() {
       showToast('사안 유형과 피해학생 이름을 입력해주세요.', 'error');
       return;
     }
-    const id = createCase({
+    createCase({
       investigation: {
         incidentType: newType,
         victimName: newVictim,
@@ -86,13 +71,31 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold text-primary">사안 대시보드</h1>
           <p className="text-on-surface-variant mt-1">학교폭력 사안 처리 현황 및 법정 기한을 관리합니다.</p>
         </div>
-        <button
-          onClick={() => setShowNewModal(true)}
-          className="flex items-center gap-2 px-5 py-3 bg-primary text-white rounded-xl font-bold shadow-md hover:opacity-90 active:scale-95 transition-all"
-        >
-          <span className="material-symbols-outlined text-[20px]">add_circle</span>
-          새 사안 등록
-        </button>
+        <div className="relative group">
+          <button
+            onClick={() => {
+              if (!allowCaseRegistration) {
+                showToast('관리자에 의해 새 사안 등록이 제한되어 있습니다.', 'warn');
+                return;
+              }
+              setShowNewModal(true);
+            }}
+            disabled={!allowCaseRegistration}
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold shadow-md transition-all ${
+              allowCaseRegistration
+                ? 'bg-primary text-white hover:opacity-90 active:scale-95'
+                : 'bg-outline-variant text-on-surface-variant cursor-not-allowed opacity-60'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[20px]">add_circle</span>
+            새 사안 등록
+          </button>
+          {!allowCaseRegistration && (
+            <div className="absolute bottom-full mb-2 right-0 bg-on-surface text-surface text-xs rounded-xl px-3 py-1.5 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+              관리자에 의해 등록이 비활성화되어 있습니다.
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Urgent Alert */}
