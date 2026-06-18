@@ -58,7 +58,12 @@ export default function AdminPortal() {
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated) fetchSchools();
+    if (isAuthenticated) {
+      const timer = setTimeout(() => {
+        fetchSchools();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
   }, [isAuthenticated, fetchSchools]);
 
   /* ─── Login ─── */

@@ -16,7 +16,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { cases, createCase, selectCase, showToast, deleteCase, allowCaseRegistration } = useCase();
   const [showNewModal, setShowNewModal] = useState(false);
-  const [newType, setNewType] = useState('');
+  const [newTypes, setNewTypes] = useState([]);
   const [newVictim, setNewVictim] = useState('');
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
@@ -25,13 +25,13 @@ export default function Dashboard() {
   const urgentCase = cases.find(c => c.status === 'statements' || c.status === 'investigation');
 
   function handleCreateCase() {
-    if (!newType || !newVictim) {
+    if (newTypes.length === 0 || !newVictim) {
       showToast('사안 유형과 피해학생 이름을 입력해주세요.', 'error');
       return;
     }
     createCase({
       investigation: {
-        incidentType: newType,
+        incidentType: newTypes.join('·'),
         victimName: newVictim,
         incidentDate: newDate,
         incidentTime: newTime,
@@ -39,7 +39,7 @@ export default function Dashboard() {
       }
     });
     setShowNewModal(false);
-    setNewType('');
+    setNewTypes([]);
     setNewVictim('');
     setNewDate('');
     setNewTime('');
@@ -48,6 +48,14 @@ export default function Dashboard() {
     navigate('/investigation');
   }
 
+  function handleCloseModal() {
+    setShowNewModal(false);
+    setNewTypes([]);
+    setNewVictim('');
+    setNewDate('');
+    setNewTime('');
+    setNewLocation('');
+  }
 
   function handleContinue(c) {
     selectCase(c.id);
@@ -244,7 +252,7 @@ export default function Dashboard() {
 
       {/* New Case Modal */}
       {showNewModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setShowNewModal(false)}>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={handleCloseModal}>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 mx-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
@@ -258,18 +266,42 @@ export default function Dashboard() {
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">사안 유형 <span className="text-error">*</span></label>
+                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
+                  사안 유형 <span className="text-error">*</span>
+                  {newTypes.length > 0 && (
+                    <span className="ml-2 normal-case text-[11px] bg-primary text-white px-2 py-0.5 rounded-full font-medium">
+                      {newTypes.length}개 선택
+                    </span>
+                  )}
+                </label>
                 <div className="grid grid-cols-2 gap-2">
-                  {violenceTypes.map(t => (
-                    <button
-                      key={t}
-                      onClick={() => setNewType(t)}
-                      className={`px-3 py-2 rounded-lg text-sm border transition-all ${newType === t ? 'bg-primary text-white border-primary font-bold' : 'border-outline-variant text-on-surface hover:border-primary'}`}
-                    >
-                      {t}
-                    </button>
-                  ))}
+                  {violenceTypes.map(t => {
+                    const selected = newTypes.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setNewTypes(prev =>
+                          prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]
+                        )}
+                        className={`px-3 py-2 rounded-lg text-sm border transition-all flex items-center justify-center gap-1.5
+                          ${selected
+                            ? 'bg-primary text-white border-primary font-bold shadow-sm'
+                            : 'border-outline-variant text-on-surface hover:border-primary hover:bg-primary/5'}`}
+                      >
+                        {selected && (
+                          <span className="material-symbols-outlined text-[14px]">check</span>
+                        )}
+                        {t}
+                      </button>
+                    );
+                  })}
                 </div>
+                {newTypes.length > 0 && (
+                  <p className="text-[11px] text-on-surface-variant mt-2 truncate">
+                    선택: {newTypes.join(' · ')}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">피해학생 이름 <span className="text-error">*</span></label>
@@ -314,7 +346,7 @@ export default function Dashboard() {
             </div>
 
             <div className="flex gap-3">
-              <button onClick={() => setShowNewModal(false)} className="flex-1 py-3 border border-outline-variant rounded-xl text-on-surface-variant font-bold hover:bg-surface-container transition-all">
+              <button onClick={handleCloseModal} className="flex-1 py-3 border border-outline-variant rounded-xl text-on-surface-variant font-bold hover:bg-surface-container transition-all">
                 취소
               </button>
               <button onClick={handleCreateCase} className="flex-1 py-3 bg-primary text-white rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all shadow-md">
