@@ -3,10 +3,10 @@ import { useCase } from './context/CaseContext';
 
 const navItems = [
   { to: '/', icon: 'dashboard', label: '대시보드', exact: true },
-  { to: '/investigation', icon: 'search', label: '사안 조사', step: 2 },
-  { to: '/statements', icon: 'history_edu', label: '진술서/동의서', step: 3 },
-  { to: '/deliberation', icon: 'gavel', label: '전담기구 심의', step: 4 },
-  { to: '/packaging', icon: 'inventory_2', label: '최종 패키징', step: 5 },
+  { to: '/investigation', icon: 'search', label: '사안 조사', step: 1 },
+  { to: '/statements', icon: 'history_edu', label: '진술서/동의서', step: 2 },
+  { to: '/deliberation', icon: 'gavel', label: '전담기구 심의', step: 3 },
+  { to: '/packaging', icon: 'inventory_2', label: '최종 패키징', step: 4 },
 ];
 
 const today = new Date().toLocaleDateString('ko-KR', {
@@ -52,7 +52,7 @@ export default function Layout() {
             </div>
             <div>
               <p className="text-white font-bold text-sm">사안처리 단계</p>
-              <p className="text-white/50 text-xs">5단계 프로세스</p>
+              <p className="text-white/50 text-xs">4단계 프로세스</p>
             </div>
           </div>
         </div>

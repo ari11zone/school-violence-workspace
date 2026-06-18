@@ -99,6 +99,17 @@ export default function Investigation() {
     return Object.keys(errs).length === 0;
   }
 
+  function handleToggleType(type) {
+    const selectedTypes = form.incidentType ? form.incidentType.split('·') : [];
+    let updatedTypes;
+    if (selectedTypes.includes(type)) {
+      updatedTypes = selectedTypes.filter(t => t !== type);
+    } else {
+      updatedTypes = [...selectedTypes, type];
+    }
+    set('incidentType', updatedTypes.join('·'));
+  }
+
   function handleSave() {
     updateInvestigation(form);
     showToast('임시 저장되었습니다.');
@@ -276,12 +287,26 @@ export default function Investigation() {
             <div className="mt-5">
               <FieldLabel label="사안 유형" required />
               <div className="flex flex-wrap gap-2">
-                {INCIDENT_TYPES.map(t => (
-                  <button key={t} onClick={() => set('incidentType', t)}
-                    className={`px-4 py-2 rounded-xl text-sm border font-medium transition-all ${form.incidentType === t ? 'bg-primary text-white border-primary shadow-md' : 'border-outline-variant text-on-surface hover:border-primary hover:text-primary'}`}>
-                    {t}
-                  </button>
-                ))}
+                {INCIDENT_TYPES.map(t => {
+                  const selectedTypes = form.incidentType ? form.incidentType.split('·') : [];
+                  const isSelected = selectedTypes.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => handleToggleType(t)}
+                      className={`px-4 py-2 rounded-xl text-sm border font-medium transition-all flex items-center gap-1.5
+                        ${isSelected
+                          ? 'bg-primary text-white border-primary shadow-md'
+                          : 'border-outline-variant text-on-surface hover:border-primary hover:text-primary hover:bg-primary/5'}`}
+                    >
+                      {isSelected && (
+                        <span className="material-symbols-outlined text-[14px]">check</span>
+                      )}
+                      {t}
+                    </button>
+                  );
+                })}
               </div>
               {errors.incidentType && <p className="text-error text-xs mt-1">{errors.incidentType}</p>}
             </div>
