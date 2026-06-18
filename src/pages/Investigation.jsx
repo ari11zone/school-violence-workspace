@@ -204,6 +204,19 @@ export default function Investigation() {
         </div>
       </div>
 
+      {/* Lock Warning Banner */}
+      {currentCase?.isLocked && (
+        <div className="mb-6 bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 flex items-center gap-4">
+          <div className="w-10 h-10 bg-amber-400 rounded-xl flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-white text-[20px]">lock</span>
+          </div>
+          <div>
+            <p className="font-bold text-amber-800 text-sm">관리자에 의해 접속이 차단된 사안입니다.</p>
+            <p className="text-amber-700 text-xs mt-0.5">이 사안은 현재 잠금 상태입니다. 수정 및 저장이 불가능합니다. 관리자에게 문의하세요.</p>
+          </div>
+        </div>
+      )}
+
       {/* Progress */}
       <div className="bg-white rounded-2xl border border-outline-variant p-5 mb-6 flex items-center gap-6">
         <div className="flex-1">

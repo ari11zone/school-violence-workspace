@@ -41,6 +41,10 @@ export default function Layout() {
             <span className="material-symbols-outlined text-white text-[18px]">account_circle</span>
           </div>
           <span className="text-white text-sm font-medium">담당 교사</span>
+          <Link to="/admin" className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/25 text-white rounded-xl text-xs font-bold transition-all ml-1">
+            <span className="material-symbols-outlined text-[16px]">admin_panel_settings</span>
+            관리자
+          </Link>
         </div>
       </header>
 
