@@ -131,13 +131,13 @@ export default function Deliberation() {
           {inv.victimName && (
             <span className="flex items-center gap-1 text-xs bg-error/10 border border-error/30 rounded-full px-3 py-1 font-semibold text-error">
               <span className="material-symbols-outlined text-[14px]">person</span>
-              피해: {inv.victimName}{inv.victimGrade ? ` (${inv.victimGrade}학년 ${inv.victimClass || ''}반)` : ''}
+              피해(관련)학생: {inv.victimName}{inv.victimGrade ? ` (${inv.victimGrade}학년 ${inv.victimClass || ''}반)` : ''}
             </span>
           )}
           {inv.perpetratorName && (
             <span className="flex items-center gap-1 text-xs bg-amber-50 border border-amber-300 rounded-full px-3 py-1 font-semibold text-amber-700">
               <span className="material-symbols-outlined text-[14px]">person_alert</span>
-              가해: {inv.perpetratorName}{inv.perpetratorGrade ? ` (${inv.perpetratorGrade}학년 ${inv.perpetratorClass || ''}반)` : ''}
+              가해(관련)학생: {inv.perpetratorName}{inv.perpetratorGrade ? ` (${inv.perpetratorGrade}학년 ${inv.perpetratorClass || ''}반)` : ''}
             </span>
           )}
           {stmts && (
