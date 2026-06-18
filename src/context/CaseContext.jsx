@@ -147,12 +147,29 @@ const defaultCases = [
   },
 ];
 
+function migrateIncidentType(typeStr) {
+  if (!typeStr) return '';
+  if (typeStr.includes(',')) return typeStr;
+  let migrated = typeStr.replace(/강요·협박/g, '__COMPEL_THREAT__');
+  migrated = migrated.replace(/·/g, ',');
+  return migrated.replace(/__COMPEL_THREAT__/g, '강요·협박');
+}
+
 export function CaseProvider({ children }) {
   const [cases, setCases] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEY_CASES);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.map(c => {
+            if (c.investigation && c.investigation.incidentType) {
+              c.investigation.incidentType = migrateIncidentType(c.investigation.incidentType);
+            }
+            return c;
+          });
+        }
+        return parsed;
       } catch (e) {
         console.error('Failed to parse saved cases:', e);
       }
