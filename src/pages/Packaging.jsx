@@ -4,7 +4,7 @@ import { useCase } from '../context/CaseContext';
 
 const REQUIRED_DOCS = [
   { key: 'docInvestigation', label: '최종 사안 조사 보고서', sub: '사안 개요, 관련자 정보, 경위', icon: 'description', required: true },
-  { key: 'docStatements', label: '학생 진술서 (피해·가해학생)', sub: '수집된 진술서 합본', icon: 'history_edu', required: true },
+  { key: 'docStatements', label: '학생 진술서 (피해·가해(관련)학생)', sub: '수집된 진술서 합본', icon: 'history_edu', required: true },
   { key: 'docConsents', label: '보호자 동의서 및 통지서 수령증', sub: '양측 보호자 서면 동의 확인', icon: 'assignment_turned_in', required: true },
   { key: 'docMinutes', label: '전담기구 회의록', sub: '심의 결과 및 위원 의견 요약', icon: 'groups', required: true },
   { key: 'docResolution', label: '학교장 자체해결 의결서 / 심의위 회부 결정서', sub: '최종 처리 방향 결정 문서', icon: 'gavel', required: true },
@@ -74,7 +74,7 @@ export default function Packaging() {
     perpName: inv?.perpetratorName || '—',
     perpGrade: inv?.perpetratorGrade || '',
     perpClass: inv?.perpetratorClass || '',
-    incidentType: inv?.incidentType || '—',
+    incidentType: (inv?.incidentType || '').replace(/,/g, ' · ') || '—',
     incidentDate: inv?.incidentDate || '—',
     incidentLocation: inv?.incidentLocation || '—',
     decision: delib?.decision === 'self' ? '학교장 자체해결' : delib?.decision === 'committee' ? '심의위원회 회부' : '미결정',
@@ -127,7 +127,7 @@ export default function Packaging() {
         <div className="mb-6 bg-primary/5 border border-primary/20 rounded-2xl p-4 grid grid-cols-4 gap-4">
           {[
             { icon: 'folder_open', label: '사안번호', value: currentCase?.id },
-            { icon: 'category', label: '유형', value: inv.incidentType || '—' },
+            { icon: 'category', label: '유형', value: (inv.incidentType || '').replace(/,/g, ' · ') || '—' },
             { icon: 'gavel', label: '처리방향', value: previewData.decision },
             { icon: 'calendar_today', label: '심의일자', value: delib?.deliberationDate || '미입력' },
           ].map(item => (
@@ -294,16 +294,16 @@ export default function Packaging() {
                       <td className="border border-black p-2">{previewData.createdAt}</td>
                     </tr>
                     <tr>
-                      <th className="border border-black bg-gray-100 p-2 text-left">피해학생</th>
+                      <th className="border border-black bg-gray-100 p-2 text-left">피해(관련)학생</th>
                       <td className="border border-black p-2">{previewData.victimName}{previewData.victimGrade ? ` (${previewData.victimGrade}학년 ${previewData.victimClass}반)` : ''}</td>
                     </tr>
                     <tr>
-                      <th className="border border-black bg-gray-100 p-2 text-left">가해학생</th>
+                      <th className="border border-black bg-gray-100 p-2 text-left">가해(관련)학생</th>
                       <td className="border border-black p-2">{previewData.perpName}{previewData.perpGrade ? ` (${previewData.perpGrade}학년 ${previewData.perpClass}반)` : ''}</td>
                     </tr>
                     <tr>
                       <th className="border border-black bg-gray-100 p-2 text-left">사안 유형</th>
-                      <td className="border border-black p-2">{previewData.incidentType}</td>
+                      <td className="border border-black p-2">{(previewData.incidentType || '').replace(/,/g, ' · ')}</td>
                     </tr>
                     <tr>
                       <th className="border border-black bg-gray-100 p-2 text-left">심의 일자</th>

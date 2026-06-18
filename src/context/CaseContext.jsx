@@ -87,7 +87,7 @@ const defaultCases = [
       incidentDate: '2024-10-22',
       incidentTime: '12:30',
       incidentLocation: '3학년 2반 교실',
-      incidentType: '언어폭력·사이버불링',
+      incidentType: '언어폭력,사이버불링',
       victimName: '김○○',
       victimGrade: '3',
       victimClass: '2',

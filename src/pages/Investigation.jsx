@@ -11,10 +11,10 @@ const REQUIRED_FIELDS = [
   { key: 'incidentTime', label: '발생 시각' },
   { key: 'incidentLocation', label: '발생 장소' },
   { key: 'incidentType', label: '사안 유형' },
-  { key: 'victimName', label: '피해학생 이름' },
-  { key: 'victimGrade', label: '피해학생 학년' },
-  { key: 'perpetratorName', label: '가해학생 이름' },
-  { key: 'perpetratorGrade', label: '가해학생 학년' },
+  { key: 'victimName', label: '피해(관련)학생 이름' },
+  { key: 'victimGrade', label: '피해(관련)학생 학년' },
+  { key: 'perpetratorName', label: '가해(관련)학생 이름' },
+  { key: 'perpetratorGrade', label: '가해(관련)학생 학년' },
   { key: 'summary', label: '사안 개요' },
 ];
 
@@ -100,14 +100,14 @@ export default function Investigation() {
   }
 
   function handleToggleType(type) {
-    const selectedTypes = form.incidentType ? form.incidentType.split('·') : [];
+    const selectedTypes = form.incidentType ? form.incidentType.split(',') : [];
     let updatedTypes;
     if (selectedTypes.includes(type)) {
       updatedTypes = selectedTypes.filter(t => t !== type);
     } else {
       updatedTypes = [...selectedTypes, type];
     }
-    set('incidentType', updatedTypes.join('·'));
+    set('incidentType', updatedTypes.join(','));
   }
 
   function handleSave() {
@@ -288,7 +288,7 @@ export default function Investigation() {
               <FieldLabel label="사안 유형" required />
               <div className="flex flex-wrap gap-2">
                 {INCIDENT_TYPES.map(t => {
-                  const selectedTypes = form.incidentType ? form.incidentType.split('·') : [];
+                  const selectedTypes = form.incidentType ? form.incidentType.split(',') : [];
                   const isSelected = selectedTypes.includes(t);
                   return (
                     <button
@@ -320,7 +320,7 @@ export default function Investigation() {
           {/* Victim */}
           <div className="bg-white rounded-2xl border border-outline-variant p-6">
             <h2 className="font-bold text-error text-lg mb-5 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px]">person</span>피해학생 정보
+              <span className="material-symbols-outlined text-[20px]">person</span>피해(관련)학생 정보
             </h2>
             <div className="space-y-4">
               <div>
@@ -354,7 +354,7 @@ export default function Investigation() {
           {/* Perpetrator */}
           <div className="bg-white rounded-2xl border border-outline-variant p-6">
             <h2 className="font-bold text-primary text-lg mb-5 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px]">person_alert</span>가해학생 정보
+              <span className="material-symbols-outlined text-[20px]">person_alert</span>가해(관련)학생 정보
             </h2>
             <div className="space-y-4">
               <div>
@@ -553,9 +553,9 @@ export default function Investigation() {
                 ['사안번호', form.caseNumber || '자동생성'],
                 ['발생일시', form.incidentDate && form.incidentTime ? `${form.incidentDate} ${form.incidentTime}` : '—'],
                 ['발생장소', form.incidentLocation || '—'],
-                ['사안유형', form.incidentType || '—'],
-                ['피해학생', form.victimName ? `${form.victimName} (${form.victimGrade}학년 ${form.victimClass}반)` : '—'],
-                ['가해학생', form.perpetratorName ? `${form.perpetratorName} (${form.perpetratorGrade}학년 ${form.perpetratorClass}반)` : '—'],
+                ['사안유형', (form.incidentType || '').replace(/,/g, ' · ') || '—'],
+                ['피해(관련)학생', form.victimName ? `${form.victimName} (${form.victimGrade}학년 ${form.victimClass}반)` : '—'],
+                ['가해(관련)학생', form.perpetratorName ? `${form.perpetratorName} (${form.perpetratorGrade}학년 ${form.perpetratorClass}반)` : '—'],
                 ['증거자료', `${(form.evidences || []).length}건`],
                 ['목격자', form.witnesses || '—'],
               ].map(([k, v]) => (

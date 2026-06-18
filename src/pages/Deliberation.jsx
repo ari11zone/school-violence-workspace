@@ -69,13 +69,13 @@ export default function Deliberation() {
 
   // AI 초안 자동생성 (실제 데이터 기반)
   const aiSummary = allReqsMet && inv
-    ? `본 사안(${inv.incidentDate || '일자미상'}, ${inv.incidentLocation || '장소미상'})은 ${inv.incidentType || '유형미상'}으로 접수되었으며, 가해학생(${inv.perpetratorName || '미입력'})과 피해학생(${inv.victimName || '미입력'}) 간의 사안입니다. 전담기구는 자체해결 4가지 요건을 검토한 결과 전원 충족함을 확인하였습니다.`
+    ? `본 사안(${inv.incidentDate || '일자미상'}, ${inv.incidentLocation || '장소미상'})은 ${(inv.incidentType || '').replace(/,/g, ' · ') || '유형미상'}으로 접수되었으며, 가해(관련)학생(${inv.perpetratorName || '미입력'})과 피해(관련)학생(${inv.victimName || '미입력'}) 간의 사안입니다. 전담기구는 자체해결 4가지 요건을 검토한 결과 전원 충족함을 확인하였습니다.`
     : null;
 
   const aiConclusion = form.decision === 'self'
-    ? `학교폭력예방 및 대책에 관한 법률 제13조의2 제1항에 의거, 4가지 요건을 모두 충족하며 피해학생 및 보호자의 서면 동의를 득하였으므로 학교장 자체해결로 종결합니다. 추후 생활지도를 통해 재발 방지에 힘씁니다.`
+    ? `학교폭력예방 및 대책에 관한 법률 제13조의2 제1항에 의거, 4가지 요건을 모두 충족하며 피해(관련)학생 및 보호자의 서면 동의를 득하였으므로 학교장 자체해결로 종결합니다. 추후 생활지도를 통해 재발 방지에 힘씁니다.`
     : form.decision === 'committee'
-    ? `자체해결 요건을 충족하지 아니하거나 피해학생 측이 심의위원회 개최를 요청하였으므로, 학교폭력대책심의위원회에 심의를 요청합니다.`
+    ? `자체해결 요건을 충족하지 아니하거나 피해(관련)학생 측이 심의위원회 개최를 요청하였으므로, 학교폭력대책심의위원회에 심의를 요청합니다.`
     : null;
 
   return (
@@ -125,7 +125,7 @@ export default function Deliberation() {
           </div>
           {inv.incidentType && (
             <span className="flex items-center gap-1 text-xs bg-white border border-primary/30 rounded-full px-3 py-1 font-semibold text-primary">
-              <span className="material-symbols-outlined text-[14px]">category</span>{inv.incidentType}
+              <span className="material-symbols-outlined text-[14px]">category</span>{(inv.incidentType || '').replace(/,/g, ' · ')}
             </span>
           )}
           {inv.victimName && (
@@ -143,13 +143,13 @@ export default function Deliberation() {
           {stmts && (
             <span className={`flex items-center gap-1 text-xs rounded-full px-3 py-1 font-semibold border ${stmts.parentConsentVictim ? 'bg-teal-50 text-teal-700 border-teal-300' : 'bg-error/10 text-error border-error/30'}`}>
               <span className="material-symbols-outlined text-[14px]">{stmts.parentConsentVictim ? 'check_circle' : 'cancel'}</span>
-              피해학생 보호자 동의 {stmts.parentConsentVictim ? '완료' : '미완'}
+              피해(관련)학생 보호자 동의 {stmts.parentConsentVictim ? '완료' : '미완'}
             </span>
           )}
           {stmts && (
             <span className={`flex items-center gap-1 text-xs rounded-full px-3 py-1 font-semibold border ${stmts.parentConsentPerp ? 'bg-teal-50 text-teal-700 border-teal-300' : 'bg-amber-50 text-amber-700 border-amber-300'}`}>
               <span className="material-symbols-outlined text-[14px]">{stmts.parentConsentPerp ? 'check_circle' : 'warning'}</span>
-              가해학생 보호자 동의 {stmts.parentConsentPerp ? '완료' : '미완'}
+              가해(관련)학생 보호자 동의 {stmts.parentConsentPerp ? '완료' : '미완'}
             </span>
           )}
         </div>
@@ -161,7 +161,7 @@ export default function Deliberation() {
           {stmts.victimStatement && (
             <div className="bg-error/5 border border-error/20 rounded-2xl p-4">
               <p className="text-xs font-bold text-error mb-2 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px]">person</span>피해학생 진술 요약
+                <span className="material-symbols-outlined text-[14px]">person</span>피해(관련)학생 진술 요약
               </p>
               <p className="text-xs text-on-surface leading-relaxed line-clamp-3">{stmts.victimStatement}</p>
             </div>
@@ -169,7 +169,7 @@ export default function Deliberation() {
           {stmts.perpetratorStatement && (
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
               <p className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px]">person_alert</span>가해학생 진술 요약
+                <span className="material-symbols-outlined text-[14px]">person_alert</span>가해(관련)학생 진술 요약
               </p>
               <p className="text-xs text-on-surface leading-relaxed line-clamp-3">{stmts.perpetratorStatement}</p>
             </div>
@@ -239,7 +239,7 @@ export default function Deliberation() {
                   className="w-5 h-5 mt-0.5 accent-teal-600 cursor-pointer flex-shrink-0" />
                 <div>
                   <p className={`text-sm font-bold ${form.victimAgrees ? 'text-teal-700' : 'text-on-surface'}`}>
-                    피해학생 및 보호자 자체해결 서면 동의 확인
+                    피해(관련)학생 및 보호자 자체해결 서면 동의 확인
                   </p>
                   <p className="text-xs text-on-surface-variant mt-1">자체해결 동의서 원본 보관 필수 (법령 제13조의2)</p>
                 </div>
@@ -273,7 +273,7 @@ export default function Deliberation() {
                   <span className={`material-symbols-outlined text-[20px] ${form.decision === 'committee' ? 'text-white' : 'text-purple-600'}`}>account_balance</span>
                 </div>
                 <p className={`font-bold text-sm ${form.decision === 'committee' ? 'text-purple-700' : 'text-on-surface'}`}>심의위원회 회부</p>
-                <p className="text-xs text-on-surface-variant mt-1">요건 미충족 또는 피해학생이 심의 요청 시</p>
+                <p className="text-xs text-on-surface-variant mt-1">요건 미충족 또는 피해(관련)학생이 심의 요청 시</p>
                 {form.decision === 'committee' && (
                   <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-purple-600">
                     <span className="material-symbols-outlined text-[14px]">check_circle</span>선택됨
@@ -368,7 +368,7 @@ export default function Deliberation() {
             {[
               { label: '자체해결 요건 4가지', done: allReqsMet },
               { label: '전담기구 위원 정족수', done: form.memberCheck },
-              { label: '피해학생 보호자 동의', done: form.victimAgrees },
+              { label: '피해(관련)학생 보호자 동의', done: form.victimAgrees },
               { label: '처리 방향 결정', done: !!form.decision },
             ].map(item => (
               <div key={item.label} className="flex items-center gap-2 py-1.5">

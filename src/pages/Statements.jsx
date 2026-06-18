@@ -19,8 +19,8 @@ function check6W(text) {
 }
 
 const CONSENT_ITEMS = [
-  { key: 'parentConsentVictim', label: '피해학생 보호자 동의 확인', sub: '사안 조사 및 자체해결 관련 동의' },
-  { key: 'parentConsentPerp', label: '가해학생 보호자 동의 확인', sub: '사안 조사 및 조치 관련 통보·동의' },
+  { key: 'parentConsentVictim', label: '피해(관련)학생 보호자 동의 확인', sub: '사안 조사 및 자체해결 관련 동의' },
+  { key: 'parentConsentPerp', label: '가해(관련)학생 보호자 동의 확인', sub: '사안 조사 및 조치 관련 통보·동의' },
 ];
 
 const GUIDE_PHRASES = [
@@ -51,8 +51,8 @@ export default function Statements() {
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
   const tabConfig = [
-    { key: 'victim', label: '피해학생 진술', icon: 'person', stmtKey: 'victimStatement', activeBg: 'bg-error text-white' },
-    { key: 'perp', label: '가해학생 진술', icon: 'person_alert', stmtKey: 'perpetratorStatement', activeBg: 'bg-primary text-white' },
+    { key: 'victim', label: '피해(관련)학생 진술', icon: 'person', stmtKey: 'victimStatement', activeBg: 'bg-error text-white' },
+    { key: 'perp', label: '가해(관련)학생 진술', icon: 'person_alert', stmtKey: 'perpetratorStatement', activeBg: 'bg-primary text-white' },
     { key: 'witness', label: '목격자 진술', icon: 'groups', stmtKey: 'witnessStatement', activeBg: 'bg-secondary text-white' },
   ];
 
@@ -76,9 +76,9 @@ export default function Statements() {
     const updated = { ...form, completed: true };
     updateStatements(updated);
     if (!form.victimStatement || form.victimStatement.length < 10) {
-      showToast('피해학생 진술서가 미작성 상태입니다. 나중에 보완할 수 있습니다.', 'warn');
+      showToast('피해(관련)학생 진술서가 미작성 상태입니다. 나중에 보완할 수 있습니다.', 'warn');
     } else if (!form.parentConsentVictim) {
-      showToast('피해학생 보호자 동의가 미확인입니다. 나중에 보완할 수 있습니다.', 'warn');
+      showToast('피해(관련)학생 보호자 동의가 미확인입니다. 나중에 보완할 수 있습니다.', 'warn');
     } else {
       showToast('진술서가 저장되었습니다. 전담기구 심의로 이동합니다.');
     }
@@ -118,7 +118,7 @@ export default function Statements() {
           </div>
           {inv.incidentType && (
             <span className="flex items-center gap-1 text-xs bg-white border border-primary/30 rounded-full px-3 py-1 font-semibold text-primary">
-              <span className="material-symbols-outlined text-[14px]">category</span>{inv.incidentType}
+              <span className="material-symbols-outlined text-[14px]">category</span>{(inv.incidentType || '').replace(/,/g, ' · ')}
             </span>
           )}
           {inv.victimName && (

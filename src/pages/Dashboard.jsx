@@ -31,7 +31,7 @@ export default function Dashboard() {
     }
     createCase({
       investigation: {
-        incidentType: newTypes.join('·'),
+        incidentType: newTypes.join(','),
         victimName: newVictim,
         incidentDate: newDate,
         incidentTime: newTime,
@@ -119,7 +119,7 @@ export default function Dashboard() {
                 <span className="bg-error text-white text-xs px-2 py-0.5 rounded-full font-bold">D-1</span>
               </div>
               <p className="text-on-error-container text-sm">
-                <span className="font-bold">{urgentCase.id}호</span> — {urgentCase.investigation.incidentType || '유형 미입력'}
+                <span className="font-bold">{urgentCase.id}호</span> — {(urgentCase.investigation.incidentType || '').replace(/,/g, ' · ') || '유형 미입력'}
                 <span className="ml-3 text-on-error-container/70">학교폭력예방법 제13조: 인지 후 48시간 이내 보고 필수</span>
               </p>
             </div>
@@ -163,7 +163,7 @@ export default function Dashboard() {
         <table className="w-full text-left">
           <thead className="bg-primary text-white">
             <tr>
-              {['사안번호', '발생일시', '유형', '피해학생', '현재 단계', '진행률', '작업'].map(h => (
+              {['사안번호', '발생일시', '유형', '피해(관련)학생', '현재 단계', '진행률', '작업'].map(h => (
                 <th key={h} className="px-5 py-3 text-xs font-semibold tracking-wider">{h}</th>
               ))}
             </tr>
@@ -176,7 +176,7 @@ export default function Dashboard() {
                 <tr key={c.id} className={`hover:bg-surface-container-low transition-colors ${i % 2 === 1 ? 'bg-surface-container-lowest' : 'bg-white'}`}>
                   <td className="px-5 py-4 font-bold text-primary text-sm">{c.id}</td>
                   <td className="px-5 py-4 text-sm">{c.investigation.incidentDate || c.createdAt}</td>
-                  <td className="px-5 py-4 text-sm">{c.investigation.incidentType || '—'}</td>
+                  <td className="px-5 py-4 text-sm">{(c.investigation.incidentType || '').replace(/,/g, ' · ') || '—'}</td>
                   <td className="px-5 py-4 text-sm">{c.investigation.victimName || '—'}</td>
                   <td className="px-5 py-4">
                     <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${cfg.color}`}>
@@ -304,7 +304,7 @@ export default function Dashboard() {
                 )}
               </div>
               <div>
-                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">피해학생 이름 <span className="text-error">*</span></label>
+                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">피해(관련)학생 이름 <span className="text-error">*</span></label>
                 <input
                   type="text"
                   value={newVictim}
