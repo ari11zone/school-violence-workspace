@@ -3,6 +3,12 @@ import { supabase } from '../lib/supabase';
 
 const ADMIN_PASSWORD = 'teacher1234';
 
+/** Generate a unique URL-safe slug */
+function generateSlug() {
+  const rand = () => Math.random().toString(36).slice(2, 6);
+  return `sv-${rand()}${rand()}`;  // e.g. sv-a3f2k9qr
+}
+
 export default function AdminPortal() {
   /* ─── Auth ─── */
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -19,7 +25,8 @@ export default function AdminPortal() {
   /* ─── Add school modal ─── */
   const [showAddModal, setShowAddModal] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newUrl, setNewUrl] = useState('');
+  const [newSlug, setNewSlug] = useState('');
+  const [copied, setCopied] = useState(false);
   const [adding, setAdding] = useState(false);
 
   /* ─── Delete confirm ─── */
@@ -74,26 +81,56 @@ export default function AdminPortal() {
   }
 
   /* ─── Add school ─── */
+  function openAddModal() {
+    setNewName('');
+    setNewSlug(generateSlug());
+    setCopied(false);
+    setShowAddModal(true);
+  }
+
+  function closeAddModal() {
+    setShowAddModal(false);
+    setNewName('');
+    setNewSlug('');
+    setCopied(false);
+  }
+
+  const generatedUrl = `${window.location.origin}?school=${newSlug}`;
+
+  async function handleCopyUrl() {
+    try {
+      await navigator.clipboard.writeText(generatedUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      showToast('복사에 실패했습니다.', 'error');
+    }
+  }
+
   async function handleAddSchool(e) {
     e.preventDefault();
-    if (!newName.trim() || !newUrl.trim()) {
-      showToast('학교명과 URL을 모두 입력해주세요.', 'error');
+    if (!newName.trim()) {
+      showToast('학교명을 입력해주세요.', 'error');
       return;
     }
-    let url = newUrl.trim();
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = 'https://' + url;
-    }
     setAdding(true);
-    const { error } = await supabase.from('schools').insert([{ name: newName.trim(), url }]);
+    const { error } = await supabase.from('schools').insert([{
+      name: newName.trim(),
+      slug: newSlug,
+      url: generatedUrl,
+    }]);
     setAdding(false);
     if (error) {
-      showToast('학교 추가에 실패했습니다.', 'error');
+      if (error.code === '23505') {
+        // slug collision (extremely rare) – regenerate
+        setNewSlug(generateSlug());
+        showToast('URL 충돌이 발생했습니다. 자동으로 재생성됩니다.', 'error');
+      } else {
+        showToast('학교 추가에 실패했습니다.', 'error');
+      }
     } else {
       showToast(`"${newName.trim()}" 학교가 등록되었습니다.`);
-      setNewName('');
-      setNewUrl('');
-      setShowAddModal(false);
+      closeAddModal();
       fetchSchools(true);
     }
   }
@@ -239,7 +276,7 @@ export default function AdminPortal() {
             <span className="material-symbols-outlined text-blue-400 text-[22px]">corporate_fare</span>
             전체 학교 목록
           </h2>
-          <button onClick={() => setShowAddModal(true)}
+          <button onClick={openAddModal}
             className="flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-400 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-400/40 hover:-translate-y-0.5">
             <span className="material-symbols-outlined text-[18px]">add</span>
             학교 추가
@@ -325,11 +362,12 @@ export default function AdminPortal() {
               </div>
               <div>
                 <h3 className="text-white font-bold">새 학교 등록</h3>
-                <p className="text-white/40 text-xs">학교명과 배포 URL을 입력하세요</p>
+                <p className="text-white/40 text-xs">학교명만 입력하면 접속 URL이 자동 생성됩니다</p>
               </div>
             </div>
 
             <form onSubmit={handleAddSchool} className="space-y-4">
+              {/* 학교명 */}
               <div>
                 <label className="block text-white/60 text-xs font-medium mb-1.5">학교명 *</label>
                 <input
@@ -341,22 +379,44 @@ export default function AdminPortal() {
                   autoFocus
                 />
               </div>
+
+              {/* 자동 생성 URL */}
               <div>
-                <label className="block text-white/60 text-xs font-medium mb-1.5">배포 URL *</label>
-                <input
-                  type="text"
-                  value={newUrl}
-                  onChange={e => setNewUrl(e.target.value)}
-                  placeholder="예: https://school-violence-xx.vercel.app"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-xl text-white placeholder-white/25 focus:outline-none focus:border-blue-400 transition-all text-sm"
-                />
-                <p className="text-white/30 text-xs mt-1.5">
-                  각 학교별로 별도 배포된 웹앱의 URL을 입력하세요
+                <label className="flex items-center gap-2 text-white/60 text-xs font-medium mb-1.5">
+                  <span className="material-symbols-outlined text-[13px] text-emerald-400">auto_awesome</span>
+                  자동 생성된 접속 URL
+                </label>
+                <div className="flex gap-2">
+                  <div className="flex-1 px-4 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs font-mono truncate">
+                    {generatedUrl}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyUrl}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all border
+                      ${copied
+                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                        : 'bg-white/10 border-white/15 text-white/60 hover:bg-white/15 hover:text-white'}`}>
+                    <span className="material-symbols-outlined text-[14px]">
+                      {copied ? 'check' : 'content_copy'}
+                    </span>
+                    {copied ? '복사됨' : '복사'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setNewSlug(generateSlug()); setCopied(false); }}
+                    title="URL 재생성"
+                    className="flex items-center justify-center w-10 bg-white/10 border border-white/15 rounded-xl text-white/50 hover:text-white hover:bg-white/15 transition-all">
+                    <span className="material-symbols-outlined text-[15px]">refresh</span>
+                  </button>
+                </div>
+                <p className="text-white/30 text-[11px] mt-2 leading-relaxed">
+                  이 URL을 해당 학교 교사에게 공유하세요. 학교별 데이터가 자동으로 분리됩니다.
                 </p>
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowAddModal(false); setNewName(''); setNewUrl(''); }}
+                <button type="button" onClick={closeAddModal}
                   className="flex-1 py-3 bg-white/10 hover:bg-white/15 text-white/70 hover:text-white rounded-xl text-sm font-medium transition-all">
                   취소
                 </button>

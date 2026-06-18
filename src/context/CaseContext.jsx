@@ -1,5 +1,15 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
+// Read school slug from URL: ?school=xxx
+function getSchoolSlug() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('school') || 'default';
+}
+
+const SCHOOL_SLUG = getSchoolSlug();
+const STORAGE_KEY_CASES = `sv_cases_${SCHOOL_SLUG}`;
+const STORAGE_KEY_REG   = `sv_allow_reg_${SCHOOL_SLUG}`;
+
 const CaseContext = createContext(null);
 
 const initialCase = (id) => ({
@@ -139,7 +149,7 @@ const defaultCases = [
 
 export function CaseProvider({ children }) {
   const [cases, setCases] = useState(() => {
-    const saved = localStorage.getItem('school_violence_cases');
+    const saved = localStorage.getItem(STORAGE_KEY_CASES);
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -147,11 +157,11 @@ export function CaseProvider({ children }) {
         console.error('Failed to parse saved cases:', e);
       }
     }
-    return defaultCases;
+    return SCHOOL_SLUG === 'default' ? defaultCases : [];
   });
 
   const [allowCaseRegistration, setAllowCaseRegistration] = useState(() => {
-    const saved = localStorage.getItem('school_violence_allow_reg');
+    const saved = localStorage.getItem(STORAGE_KEY_REG);
     return saved !== 'false'; // default to true
   });
 
@@ -165,13 +175,13 @@ export function CaseProvider({ children }) {
 
   const currentCase = cases.find(c => c.id === currentCaseId) || null;
 
-  // Persist cases and registration toggle to localStorage
+  // Persist cases and registration toggle to localStorage (school-scoped)
   useEffect(() => {
-    localStorage.setItem('school_violence_cases', JSON.stringify(cases));
+    localStorage.setItem(STORAGE_KEY_CASES, JSON.stringify(cases));
   }, [cases]);
 
   useEffect(() => {
-    localStorage.setItem('school_violence_allow_reg', String(allowCaseRegistration));
+    localStorage.setItem(STORAGE_KEY_REG, String(allowCaseRegistration));
   }, [allowCaseRegistration]);
 
   const toggleAllowCaseRegistration = useCallback(() => {
