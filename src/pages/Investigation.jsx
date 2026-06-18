@@ -533,11 +533,22 @@ export default function Investigation() {
                   </div>
                 ))}
               </div>
+              
+              {/* 지워지지 않는 작성 도움말 */}
+              <div className="mt-4 pt-3 border-t border-primary/20 text-xs text-on-surface-variant leading-relaxed">
+                <p className="font-semibold text-primary mb-1 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[14px]">info</span>사안 개요 작성 도움말
+                </p>
+                <p>육하원칙에 따라 사안의 전말을 상세히 작성하세요.</p>
+                <p className="mt-1 text-[11px] bg-white/60 p-2.5 rounded-lg border border-primary/10">
+                  <span className="font-semibold text-primary/80">예시)</span> 2024년 10월 22일 점심시간에 3학년 2반 교실에서 이○○가 김○○에게 반복적으로 욕설을 하였고, SNS 단체 채팅방에서 강제 퇴장시켰다.
+                </p>
+              </div>
             </div>
             <FieldLabel label="사안 개요" required />
             <textarea value={form.summary} rows={8}
               onChange={e => set('summary', e.target.value)}
-              placeholder="육하원칙에 따라 사안의 전말을 상세히 작성하세요. 예) 2024년 10월 22일 점심시간에 3학년 2반 교실에서 이○○가 김○○에게 반복적으로 욕설을 하였고, SNS 단체 채팅방에서 강제 퇴장시켰다..."
+              placeholder="내용을 입력하세요."
               className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none ${errors.summary ? 'border-error' : 'border-outline-variant'}`} />
             {errors.summary && <p className="text-error text-xs mt-1">{errors.summary}</p>}
             <p className="text-right text-xs text-on-surface-variant mt-1">{form.summary.length}자</p>
