@@ -72,7 +72,11 @@ export default function Layout() {
             <span className="material-symbols-outlined text-white text-[18px]">shield_person</span>
           </div>
           <div>
-            <span className="font-bold text-white text-base tracking-tight">학폭 사안처리 시스템</span>
+            <span className="font-bold text-white text-base tracking-tight">
+              {new URLSearchParams(window.location.search).get('school') && new URLSearchParams(window.location.search).get('school') !== 'default'
+                ? `${new URLSearchParams(window.location.search).get('school')}학교 ` 
+                : ''}학폭 사안처리 시스템
+            </span>
             {currentCase && (
               <span className="ml-3 text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">
                 현재 사안: {currentCase.id}

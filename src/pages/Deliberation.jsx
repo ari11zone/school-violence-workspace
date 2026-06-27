@@ -43,6 +43,14 @@ export default function Deliberation() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCase?.id]);
 
+  // 자동 저장 (Auto-save)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateDeliberation(form);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [form, updateDeliberation]);
+
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
   const inv = currentCase?.investigation;

@@ -92,6 +92,14 @@ export default function Investigation() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCase?.id]);
 
+  // 자동 저장 (Auto-save)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateInvestigation(form);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [form, updateInvestigation]);
+
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
   function validate(fields) {

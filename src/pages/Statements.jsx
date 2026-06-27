@@ -49,6 +49,14 @@ export default function Statements() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCase?.id]);
 
+  // 자동 저장 (Auto-save)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateStatements(form);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [form, updateStatements]);
+
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
   const tabConfig = [
