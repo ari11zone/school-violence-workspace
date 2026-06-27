@@ -86,7 +86,7 @@ export default function Layout() {
               value={systemTitle}
               onChange={(e) => setSystemTitle(e.target.value)}
               className="font-bold text-white text-base tracking-tight bg-transparent border-b border-transparent hover:border-white/30 focus:border-white focus:outline-none transition-colors px-1 placeholder:text-white/50"
-              style={{ width: `${Math.max(systemTitle.length + 1, 10)}ch` }}
+              style={{ width: `${Math.max(systemTitle.length + 1, 12)}em` }}
               placeholder="시스템 이름 입력"
             />
             {currentCase && (
