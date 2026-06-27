@@ -7,14 +7,15 @@ function getSchoolSlug() {
 }
 
 const SCHOOL_SLUG = getSchoolSlug();
-const STORAGE_KEY_CASES = `sv_cases_${SCHOOL_SLUG}`;
-const STORAGE_KEY_REG   = `sv_allow_reg_${SCHOOL_SLUG}`;
+const STORAGE_KEY_CASES      = `sv_cases_${SCHOOL_SLUG}`;
+const STORAGE_KEY_REG        = `sv_allow_reg_${SCHOOL_SLUG}`;
+const STORAGE_KEY_CURRENT_ID = `sv_current_id_${SCHOOL_SLUG}`;
 
 const CaseContext = createContext(null);
 
 const initialCase = (id) => ({
   id: id,
-  createdAt: new Date().toLocaleDateString('ko-KR'),
+  createdAt: new Date().toISOString(), // ISO 타임스탬프 (D-Day 계산용)
   status: 'investigation', // investigation | statements | deliberation | packaging | closed
   isLocked: false,
   // 2단계: 사안 조사
@@ -79,7 +80,7 @@ const initialCase = (id) => ({
 const defaultCases = [
   {
     id: '2024-082',
-    createdAt: '2024. 10. 23.',
+    createdAt: '2024-10-23T00:00:00.000Z',
     status: 'statements',
     isLocked: false,
     investigation: {
@@ -113,7 +114,7 @@ const defaultCases = [
   },
   {
     id: '2024-079',
-    createdAt: '2024. 10. 18.',
+    createdAt: '2024-10-18T00:00:00.000Z',
     status: 'deliberation',
     isLocked: false,
     investigation: {
@@ -182,7 +183,9 @@ export function CaseProvider({ children }) {
     return saved !== 'false'; // default to true
   });
 
-  const [currentCaseId, setCurrentCaseId] = useState(null);
+  const [currentCaseId, setCurrentCaseId] = useState(() => {
+    return localStorage.getItem(STORAGE_KEY_CURRENT_ID) || null;
+  });
   const [toast, setToast] = useState(null);
 
   const showToast = useCallback((msg, type = 'success') => {
@@ -192,7 +195,7 @@ export function CaseProvider({ children }) {
 
   const currentCase = cases.find(c => c.id === currentCaseId) || null;
 
-  // Persist cases and registration toggle to localStorage (school-scoped)
+  // Persist cases, registration toggle, and current case ID to localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_CASES, JSON.stringify(cases));
   }, [cases]);
@@ -200,6 +203,14 @@ export function CaseProvider({ children }) {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_REG, String(allowCaseRegistration));
   }, [allowCaseRegistration]);
+
+  useEffect(() => {
+    if (currentCaseId) {
+      localStorage.setItem(STORAGE_KEY_CURRENT_ID, currentCaseId);
+    } else {
+      localStorage.removeItem(STORAGE_KEY_CURRENT_ID);
+    }
+  }, [currentCaseId]);
 
   const toggleAllowCaseRegistration = useCallback(() => {
     setAllowCaseRegistration(prev => !prev);
@@ -316,11 +327,16 @@ export function CaseProvider({ children }) {
   }, [currentCaseId, currentCase?.isLocked, showToast]);
 
   const deleteCase = useCallback((id) => {
+    const target = cases.find(c => c.id === id);
+    if (target?.isLocked) {
+      showToast('잠금 처리된 사안은 삭제할 수 없습니다. 관리자에게 문의하세요.', 'error');
+      return;
+    }
     setCases(prev => prev.filter(c => c.id !== id));
     if (currentCaseId === id) {
       setCurrentCaseId(null);
     }
-  }, [currentCaseId]);
+  }, [cases, currentCaseId, showToast]);
 
   return (
     <CaseContext.Provider value={{

@@ -1,21 +1,67 @@
+import { useState, useEffect, useMemo } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useCase } from './context/CaseContext';
 
 const navItems = [
-  { to: '/', icon: 'dashboard', label: '대시보드', exact: true },
-  { to: '/investigation', icon: 'search', label: '사안 조사', step: 1 },
-  { to: '/statements', icon: 'history_edu', label: '진술서/동의서', step: 2 },
-  { to: '/deliberation', icon: 'gavel', label: '전담기구 심의', step: 3 },
-  { to: '/packaging', icon: 'inventory_2', label: '최종 패키징', step: 4 },
+  { to: '/', icon: 'dashboard', label: '대시보드', exact: true, statusKey: null },
+  { to: '/investigation', icon: 'search', label: '사안 조사', step: 1, statusKey: 'investigation' },
+  { to: '/statements', icon: 'history_edu', label: '진술서/동의서', step: 2, statusKey: 'statements' },
+  { to: '/deliberation', icon: 'gavel', label: '전담기구 심의', step: 3, statusKey: 'deliberation' },
+  { to: '/packaging', icon: 'inventory_2', label: '최종 패키징', step: 4, statusKey: 'packaging' },
 ];
 
-const today = new Date().toLocaleDateString('ko-KR', {
-  year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
-});
+// 48시간 D-Day 카운터 계산
+function calcDeadline(createdAt) {
+  if (!createdAt) return null;
+  const created = new Date(createdAt);
+  if (isNaN(created.getTime())) return null;
+  const deadline = new Date(created.getTime() + 48 * 60 * 60 * 1000);
+  const now = new Date();
+  const diffMs = deadline - now;
+  if (diffMs <= 0) return { overdue: true, hours: 0, minutes: 0 };
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  return { overdue: false, hours, minutes };
+}
+
+// 단계 완료 여부 판단
+function isStepCompleted(currentCase, statusKey) {
+  if (!currentCase || !statusKey) return false;
+  const stageOrder = ['investigation', 'statements', 'deliberation', 'packaging', 'closed'];
+  const caseStageIdx = stageOrder.indexOf(currentCase.status);
+  const itemStageIdx = stageOrder.indexOf(statusKey);
+  if (itemStageIdx < caseStageIdx) return true;
+  if (itemStageIdx === caseStageIdx) return currentCase[statusKey]?.completed === true;
+  return false;
+}
 
 export default function Layout() {
   const location = useLocation();
   const { toast, currentCase } = useCase();
+
+  const [today, setToday] = useState(() =>
+    new Date().toLocaleDateString('ko-KR', {
+      year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
+    })
+  );
+
+  // deadline을 useMemo로 파생 - 현재사안 createdAt 기준 실시간 계산
+  // (today 상태가 1분마다 갱신되뮼서 재렌더링됨)
+  const deadline = useMemo(
+    () => calcDeadline(currentCase?.createdAt),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentCase?.createdAt, today] // today 구독 → 1분마다 자동 재계산
+  );
+
+  // 날짜 실시간 업데이트 (1분마다) — deadline도 함께 코엄동알 재계산
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setToday(new Date().toLocaleDateString('ko-KR', {
+        year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
+      }));
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="text-on-surface bg-background min-h-screen">
@@ -58,8 +104,9 @@ export default function Layout() {
         </div>
 
         <div className="flex flex-col gap-1 flex-1 py-3 px-2">
-          {navItems.map(({ to, icon, label, exact, step }) => {
+          {navItems.map(({ to, icon, label, exact, step, statusKey }) => {
             const active = exact ? location.pathname === to : location.pathname.startsWith(to);
+            const completed = isStepCompleted(currentCase, statusKey);
             return (
               <Link
                 key={to}
@@ -74,27 +121,55 @@ export default function Layout() {
                   {icon}
                 </span>
                 <span>{label}</span>
-                {step && (
-                  <span className={`ml-auto text-xs px-1.5 py-0.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-white/10 text-white/70'}`}>
-                    {step}단계
-                  </span>
-                )}
+                <div className="ml-auto flex items-center gap-1">
+                  {completed && (
+                    <span className={`material-symbols-outlined text-[16px] ${active ? 'text-white' : 'text-teal-300'}`}>
+                      check_circle
+                    </span>
+                  )}
+                  {step && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-white/10 text-white/70'}`}>
+                      {step}단계
+                    </span>
+                  )}
+                </div>
               </Link>
             );
           })}
         </div>
 
         <div className="px-3 py-4 border-t border-primary/20">
-          <div className="bg-error-container/20 border border-error/30 rounded-xl p-3">
+          {/* 법정 기한 D-Day 카운터 */}
+          <div className={`border rounded-xl p-3 mb-3 ${
+            deadline?.overdue
+              ? 'bg-error/20 border-error/60'
+              : deadline && deadline.hours < 12
+              ? 'bg-amber-500/20 border-amber-400/60'
+              : 'bg-error-container/20 border-error/30'
+          }`}>
             <div className="flex items-center gap-2 mb-1">
-              <span className="material-symbols-outlined text-red-400 text-[16px]">schedule</span>
-              <span className="text-red-400 text-xs font-bold">법정 기한 안내</span>
+              <span className={`material-symbols-outlined text-[16px] ${deadline?.overdue ? 'text-red-300 animate-pulse' : 'text-red-400'}`}>schedule</span>
+              <span className={`text-xs font-bold ${deadline?.overdue ? 'text-red-300' : 'text-red-400'}`}>법정 기한 안내</span>
             </div>
-            <p className="text-white/80 text-xs leading-relaxed">
-              사안 인지 후 <span className="font-bold text-red-400">48시간 이내</span> 교육지원청 보고 완료 필수
-            </p>
+            {currentCase && deadline ? (
+              deadline.overdue ? (
+                <p className="text-red-300 text-xs font-bold animate-pulse">⚠ 48시간 기한 초과!</p>
+              ) : (
+                <p className="text-white/80 text-xs leading-relaxed">
+                  잔여 <span className="font-bold text-amber-300">{deadline.hours}시간 {deadline.minutes}분</span>
+                  <br /><span className="text-white/50 text-[10px]">사안 인지 후 48시간 이내 보고</span>
+                </p>
+              )
+            ) : (
+              <p className="text-white/80 text-xs leading-relaxed">
+                사안 인지 후 <span className="font-bold text-red-400">48시간 이내</span> 교육지원청 보고 완료 필수
+              </p>
+            )}
           </div>
-          <button className="w-full flex items-center gap-2 px-3 py-2 mt-3 text-white/60 hover:text-red-400 hover:bg-white/5 rounded-lg text-sm transition-all">
+          <button
+            onClick={() => {}}
+            className="w-full flex items-center gap-2 px-3 py-2 text-white/60 hover:text-red-400 hover:bg-white/5 rounded-lg text-sm transition-all"
+          >
             <span className="material-symbols-outlined text-[18px]">logout</span>
             로그아웃
           </button>

@@ -56,12 +56,13 @@ export default function Deliberation() {
   }
 
   function handleConfirm() {
-    const updated = { ...form, completed: true };
-    updateDeliberation(updated);
+    // 유효성 검사를 먼저 수행 (completed:true 저장 전)
     if (!form.decision) {
       showToast('처리 방향(자체해결 / 심의위 회부)을 선택해주세요.', 'error');
       return;
     }
+    const updated = { ...form, completed: true };
+    updateDeliberation(updated);
     advanceStatus('packaging');
     showToast('의결이 확정되었습니다. 최종 패키징 단계로 이동합니다.');
     setTimeout(() => navigate('/packaging'), 800);

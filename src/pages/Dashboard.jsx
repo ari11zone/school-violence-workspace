@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
 
@@ -23,6 +23,51 @@ export default function Dashboard() {
   const [newLocation, setNewLocation] = useState('');
 
   const urgentCase = cases.find(c => c.status === 'statements' || c.status === 'investigation');
+
+  // 검색 & 필터 상태
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+
+  // 실제 D-Day 계산 (48시간 기준)
+  function calcDDay(createdAt) {
+    if (!createdAt) return null;
+    const created = new Date(createdAt);
+    if (isNaN(created.getTime())) return null;
+    const deadline = new Date(created.getTime() + 48 * 60 * 60 * 1000);
+    const diffMs = deadline - new Date();
+    if (diffMs <= 0) return { label: '기한초과', overdue: true };
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    if (hours < 24) return { label: `${hours}시간 ${minutes}분`, overdue: hours < 6 };
+    const days = Math.floor(hours / 24);
+    return { label: `D-${days}`, overdue: false };
+  }
+
+  const urgentDeadline = urgentCase ? calcDDay(urgentCase.createdAt) : null;
+
+  // 이번 달 종결 건수 계산
+  const thisMonthClosed = useMemo(() => {
+    const now = new Date();
+    return cases.filter(c => {
+      if (c.status !== 'closed') return false;
+      const d = new Date(c.createdAt);
+      return !isNaN(d.getTime()) && d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    }).length;
+  }, [cases]);
+
+  // 검색 & 필터 적용
+  const filteredCases = useMemo(() => {
+    return cases.filter(c => {
+      const matchStatus = filterStatus === 'all' || c.status === filterStatus;
+      const q = searchQuery.toLowerCase();
+      const matchSearch = !q ||
+        c.id.toLowerCase().includes(q) ||
+        (c.investigation?.victimName || '').toLowerCase().includes(q) ||
+        (c.investigation?.incidentType || '').toLowerCase().includes(q) ||
+        (c.investigation?.incidentLocation || '').toLowerCase().includes(q);
+      return matchStatus && matchSearch;
+    });
+  }, [cases, searchQuery, filterStatus]);
 
   function handleCreateCase() {
     if (newTypes.length === 0 || !newVictim) {
@@ -116,7 +161,9 @@ export default function Dashboard() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-bold text-error text-lg">긴급 처리 사안 (법정 기한 임박)</span>
-                <span className="bg-error text-white text-xs px-2 py-0.5 rounded-full font-bold">D-1</span>
+                <span className={`text-white text-xs px-2 py-0.5 rounded-full font-bold ${urgentDeadline?.overdue ? 'bg-red-700 animate-pulse' : 'bg-error'}`}>
+                  {urgentDeadline?.label || 'D-?'}
+                </span>
               </div>
               <p className="text-on-error-container text-sm">
                 <span className="font-bold">{urgentCase.id}호</span> — {(urgentCase.investigation.incidentType || '').replace(/,/g, ' · ') || '유형 미입력'}
@@ -140,7 +187,7 @@ export default function Dashboard() {
           { label: '진행 중 사안', value: cases.filter(c => c.status !== 'closed').length, icon: 'folder_open', color: 'text-primary bg-primary/10' },
           { label: '진술서 수집 중', value: cases.filter(c => c.status === 'statements').length, icon: 'history_edu', color: 'text-amber-600 bg-amber-50' },
           { label: '심의 대기', value: cases.filter(c => c.status === 'deliberation').length, icon: 'gavel', color: 'text-purple-600 bg-purple-50' },
-          { label: '이번 달 종결', value: cases.filter(c => c.status === 'closed').length, icon: 'check_circle', color: 'text-teal-600 bg-teal-50' },
+          { label: '이번 달 종결', value: thisMonthClosed, icon: 'check_circle', color: 'text-teal-600 bg-teal-50' },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-2xl border border-outline-variant p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${s.color}`}>
@@ -156,9 +203,41 @@ export default function Dashboard() {
 
       {/* Case Table */}
       <div className="bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden mb-8">
-        <div className="p-5 border-b border-outline-variant flex justify-between items-center">
-          <h2 className="font-bold text-primary text-lg">전체 사안 목록</h2>
-          <span className="text-sm text-on-surface-variant">{cases.length}건</span>
+        <div className="p-5 border-b border-outline-variant">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="font-bold text-primary text-lg">전체 사안 목록</h2>
+            <span className="text-sm text-on-surface-variant">{filteredCases.length}/{cases.length}건</span>
+          </div>
+          {/* 검색 & 필터 */}
+          <div className="flex gap-3">
+            <div className="relative flex-1">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant">search</span>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="사안번호, 학생이름, 유형, 장소 검색..."
+                className="w-full pl-9 pr-4 py-2 border border-outline-variant rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface">
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              )}
+            </div>
+            <select
+              value={filterStatus}
+              onChange={e => setFilterStatus(e.target.value)}
+              className="border border-outline-variant rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+            >
+              <option value="all">전체 상태</option>
+              <option value="investigation">사안 조사 중</option>
+              <option value="statements">진술서 수집 중</option>
+              <option value="deliberation">전담기구 심의</option>
+              <option value="packaging">패키징 완료</option>
+              <option value="closed">종결</option>
+            </select>
+          </div>
         </div>
         <table className="w-full text-left">
           <thead className="bg-primary text-white">
@@ -169,7 +248,14 @@ export default function Dashboard() {
             </tr>
           </thead>
           <tbody className="divide-y divide-outline-variant">
-            {cases.map((c, i) => {
+            {filteredCases.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-5 py-12 text-center text-on-surface-variant text-sm">
+                  <span className="material-symbols-outlined text-[40px] block mb-2 text-outline-variant">search_off</span>
+                  검색 결과가 없습니다.
+                </td>
+              </tr>
+            ) : filteredCases.map((c, i) => {
               const cfg = statusConfig[c.status] || statusConfig.closed;
               const prog = progressMap[c.status] || 0;
               return (
@@ -230,8 +316,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-3 gap-4">
         {[
           { icon: 'description', label: '표준 서식 다운로드', sub: '보고서·진술서·동의서 양식', action: () => window.open('https://drive.google.com/file/d/13oYNhLAbN8aZi9pOSTcnoW_0yR4_y4Wl/view?usp=sharing', '_blank') },
-          { icon: 'book_2', label: '법령 및 매뉴얼', sub: '학교폭력예방법 조문 안내', action: () => showToast('법령 안내 페이지를 엽니다.') },
-          { icon: 'support_agent', label: '전문 상담 연결', sub: '법적·심리 상담사 즉시 연결', action: () => showToast('상담사 연결을 요청합니다.') },
+          { icon: 'book_2', label: '법령 및 매뉴얼', sub: '학교폭력예방법 조문 안내', action: () => window.open('https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=168327', '_blank') },
+          { icon: 'support_agent', label: '전문 상담 연결', sub: '117 학교폭력 신고센터', action: () => window.open('tel:117') },
         ].map(q => (
           <button
             key={q.label}

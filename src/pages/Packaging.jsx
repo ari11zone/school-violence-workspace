@@ -204,21 +204,19 @@ export default function Packaging() {
 
             {/* 다운로드 버튼들 */}
             <div className="mt-5 flex flex-col gap-3">
-              <button onClick={() => showToast('교육지원청 제출용 단일 PDF를 생성합니다.')}
-                className="w-full bg-primary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-md active:scale-[0.98]">
+              <button
+                onClick={() => {
+                  showToast('브라우저의 인쇄 대화상자를 이용해 PDF로 저장하세요.', 'info');
+                  setTimeout(() => window.print(), 300);
+                }}
+                className="w-full bg-primary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-md active:scale-[0.98]"
+              >
                 <span className="material-symbols-outlined">picture_as_pdf</span>
-                교육지원청 제출용 단일 PDF 패키지 내보내기
+                PDF 저장 / 인쇄 (브라우저 인쇄 대화상자)
               </button>
-              <div className="flex gap-3">
-                <button onClick={() => showToast('문서를 일괄 인쇄합니다.')}
-                  className="flex-1 border border-primary text-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/10 transition-all">
-                  <span className="material-symbols-outlined">print</span>일괄 인쇄
-                </button>
-                <button onClick={() => showToast('원본 파일을 ZIP으로 다운로드합니다.')}
-                  className="flex-1 border border-primary text-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/10 transition-all">
-                  <span className="material-symbols-outlined">archive</span>원본 ZIP 다운로드
-                </button>
-              </div>
+              <p className="text-[10px] text-on-surface-variant text-center">
+                기능: 인쇄 대화상자 → “대상을 PDF로 저장” 선택 시 PDF 파일로 저장됩니다.
+              </p>
             </div>
           </div>
 
@@ -291,7 +289,12 @@ export default function Packaging() {
                     </tr>
                     <tr>
                       <th className="border border-black bg-gray-100 p-2 text-left">접수일자</th>
-                      <td className="border border-black p-2">{previewData.createdAt}</td>
+                      <td className="border border-black p-2">
+                    {(() => {
+                      const d = new Date(previewData.createdAt);
+                      return !isNaN(d.getTime()) ? d.toLocaleDateString('ko-KR') : previewData.createdAt;
+                    })()}
+                  </td>
                     </tr>
                     <tr>
                       <th className="border border-black bg-gray-100 p-2 text-left">피해(관련)학생</th>
@@ -348,10 +351,9 @@ export default function Packaging() {
               </div>
             </div>
             <div className="p-4 border-t border-outline-variant">
-              <button onClick={() => showToast('미리보기를 새로고침합니다.')}
-                className="w-full text-primary text-sm font-bold hover:underline flex items-center justify-center gap-1">
-                <span className="material-symbols-outlined text-[16px]">refresh</span>미리보기 새로고침
-              </button>
+              <p className="text-[10px] text-on-surface-variant text-center">
+                데이터 입력 시 실시간 반영됩니다.
+              </p>
             </div>
           </div>
         </div>

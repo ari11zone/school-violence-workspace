@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
 
 const INCIDENT_TYPES = ['언어폭력', '신체폭력', '사이버불링', '금품갈취', '강요·협박', '성폭력', '따돌림', '기타'];
-const GRADES = ['1', '2', '3', '4', '5', '6'];
+const ELEMENTARY_GRADES = ['1', '2', '3', '4', '5', '6'];
+const MIDDLE_GRADES = ['중1', '중2', '중3'];
+const HIGH_GRADES = ['고1', '고2', '고3'];
 const CLASSES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const REQUIRED_FIELDS = [
   { key: 'incidentDate', label: '발생 일자' },
@@ -143,6 +147,13 @@ export default function Investigation() {
   function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
+
+    // 파일 크기 제한 (5MB)
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      showToast(`파일 크기가 너무 큽니다. ${MAX_FILE_SIZE_MB}MB 이하의 파일만 첨부 가능합니다. (현재: ${(file.size / 1024 / 1024).toFixed(1)}MB)`, 'error');
+      e.target.value = ''; // 입력 초기화
+      return;
+    }
 
     selectedFileRef.current = file;
     setEvidenceName(file.name);
@@ -336,7 +347,15 @@ export default function Investigation() {
                   <select value={form.victimGrade} onChange={e => set('victimGrade', e.target.value)}
                     className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.victimGrade ? 'border-error' : 'border-outline-variant'}`}>
                     <option value="">선택</option>
-                    {GRADES.map(g => <option key={g} value={g}>{g}학년</option>)}
+                    <optgroup label="초등학교">
+                      {ELEMENTARY_GRADES.map(g => <option key={g} value={g}>{g}학년</option>)}
+                    </optgroup>
+                    <optgroup label="중학교">
+                      {MIDDLE_GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+                    </optgroup>
+                    <optgroup label="고등학교">
+                      {HIGH_GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+                    </optgroup>
                   </select>
                   {errors.victimGrade && <p className="text-error text-xs mt-1">{errors.victimGrade}</p>}
                 </div>
@@ -370,7 +389,15 @@ export default function Investigation() {
                   <select value={form.perpetratorGrade} onChange={e => set('perpetratorGrade', e.target.value)}
                     className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.perpetratorGrade ? 'border-error' : 'border-outline-variant'}`}>
                     <option value="">선택</option>
-                    {GRADES.map(g => <option key={g} value={g}>{g}학년</option>)}
+                    <optgroup label="초등학교">
+                      {ELEMENTARY_GRADES.map(g => <option key={g} value={g}>{g}학년</option>)}
+                    </optgroup>
+                    <optgroup label="중학교">
+                      {MIDDLE_GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+                    </optgroup>
+                    <optgroup label="고등학교">
+                      {HIGH_GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+                    </optgroup>
                   </select>
                   {errors.perpetratorGrade && <p className="text-error text-xs mt-1">{errors.perpetratorGrade}</p>}
                 </div>
@@ -414,8 +441,10 @@ export default function Investigation() {
                 <input 
                   type="file" 
                   onChange={handleFileChange}
+                  accept="image/*,video/*,audio/*,.pdf,.hwp,.docx,.txt,.xlsx,.pptx"
                   className="w-full text-sm text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
                 />
+                <p className="text-[10px] text-on-surface-variant mt-1">최대 {MAX_FILE_SIZE_MB}MB · 이미지, 동영상, 녹음, 문서 파일 지원</p>
               </div>
               <div className="grid grid-cols-3 gap-3 mb-3">
                 <div className="col-span-2">
