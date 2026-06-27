@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
 
@@ -37,12 +37,20 @@ export default function Admin() {
   const [showAddModal, setShowAddModal] = useState(false);
 
   // New case form state
-  const [newType, setNewType] = useState('');
+  const [newType, setNewType] = useState([]);
   const [newVictim, setNewVictim] = useState('');
   const [newPerp, setNewPerp] = useState('');
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
   const [newLocation, setNewLocation] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setShowAddModal(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   function handleLogin(e) {
     if (e) e.preventDefault();
@@ -63,13 +71,13 @@ export default function Admin() {
 
   function handleCreateCaseInAdmin(e) {
     e.preventDefault();
-    if (!newType || !newVictim) {
+    if (newType.length === 0 || !newVictim) {
       showToast('사안 유형과 피해학생 이름을 입력해주세요.', 'error');
       return;
     }
     const id = createCase({
       investigation: {
-        incidentType: newType,
+        incidentType: newType.join(','),
         victimName: newVictim,
         perpetratorName: newPerp,
         incidentDate: newDate,
@@ -80,7 +88,7 @@ export default function Admin() {
 
     if (id) {
       setShowAddModal(false);
-      setNewType('');
+      setNewType([]);
       setNewVictim('');
       setNewPerp('');
       setNewDate('');
@@ -256,7 +264,7 @@ export default function Admin() {
                         </span>
                         <span className="flex items-center gap-1">
                           <span className="material-symbols-outlined text-[14px]">calendar_today</span>
-                          생성: {c.createdAt}
+                          생성: {!isNaN(new Date(c.createdAt).getTime()) ? new Date(c.createdAt).toLocaleDateString('ko-KR') : c.createdAt}
                         </span>
                       </div>
                     </div>
@@ -334,9 +342,9 @@ export default function Admin() {
                     <button
                       key={t}
                       type="button"
-                      onClick={() => setNewType(t)}
+                      onClick={() => setNewType(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])}
                       className={`px-3 py-2 rounded-lg text-xs border font-medium transition-all ${
-                        newType === t ? 'bg-[#1e2530] text-white border-[#1e2530] font-bold' : 'border-outline-variant text-on-surface hover:border-primary'
+                        newType.includes(t) ? 'bg-[#1e2530] text-white border-[#1e2530] font-bold' : 'border-outline-variant text-on-surface hover:border-primary'
                       }`}
                     >
                       {t}

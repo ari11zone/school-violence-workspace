@@ -190,7 +190,8 @@ export function CaseProvider({ children }) {
 
   const showToast = useCallback((msg, type = 'success') => {
     setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
+    const duration = type === 'error' ? 5000 : type === 'warn' ? 4000 : 3000;
+    setTimeout(() => setToast(null), duration);
   }, []);
 
   const currentCase = cases.find(c => c.id === currentCaseId) || null;

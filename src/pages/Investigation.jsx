@@ -133,6 +133,7 @@ export default function Investigation() {
     updateInvestigation(form);
     if (step < 3) {
       setStep(s => s + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       // Final step: save and navigate
       const completed = { ...form, completed: isValid };

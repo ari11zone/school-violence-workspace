@@ -24,7 +24,7 @@ export default function Packaging() {
     docInvestigation: true, docStatements: true, docConsents: true,
     docEvidences: false, docMinutes: true, docResolution: true,
     maskPersonalInfo: true, principalApproved: false,
-    submittedTo: '', note: '', completed: false,
+    submittedTo: '', principalName: '', note: '', completed: false,
   });
 
   useEffect(() => {
@@ -244,14 +244,25 @@ export default function Packaging() {
                 </label>
               ))}
             </div>
-            <div>
-              <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
-                제출 대상 기관 <span className="text-error">*</span>
-              </label>
-              <input type="text" value={form.submittedTo}
-                onChange={e => set('submittedTo', e.target.value)}
-                placeholder="예: ○○교육지원청 학교지원과"
-                className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
+                  제출 대상 기관 <span className="text-error">*</span>
+                </label>
+                <input type="text" value={form.submittedTo}
+                  onChange={e => set('submittedTo', e.target.value)}
+                  placeholder="예: ○○교육지원청 학교지원과"
+                  className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
+                  학교장 성명 <span className="text-error">*</span>
+                </label>
+                <input type="text" value={form.principalName || ''}
+                  onChange={e => set('principalName', e.target.value)}
+                  placeholder="예: 홍길동"
+                  className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              </div>
             </div>
             {form.note !== undefined && (
               <div className="mt-3">
@@ -346,7 +357,8 @@ export default function Packaging() {
 
                 <div className="text-center mt-12">
                   <p className="text-sm mb-3">{previewData.deliberationDate !== '—' ? previewData.deliberationDate : new Date().toLocaleDateString('ko-KR')}</p>
-                  <p className="font-bold tracking-widest">{form.submittedTo ? form.submittedTo + ' 제출' : '○○학교장 (인)'}</p>
+                  <p className="font-bold tracking-widest mb-1">{form.principalName ? `${form.principalName} (인)` : '○○학교장 (인)'}</p>
+                  {form.submittedTo && <p className="text-xs text-on-surface-variant">제출처: {form.submittedTo}</p>}
                 </div>
               </div>
             </div>

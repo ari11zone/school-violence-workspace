@@ -23,10 +23,11 @@ const CONSENT_ITEMS = [
   { key: 'parentConsentPerp', label: '가해(관련)학생 보호자 동의 확인', sub: '사안 조사 및 조치 관련 통보·동의' },
 ];
 
-const GUIDE_PHRASES = [
-  '저는', '피해를 입었습니다.', '그 학생이', '에서', '했습니다.',
-  '두렵고 무서웠습니다.', '선생님께 알리고 싶었습니다.',
-];
+const GUIDE_PHRASES = {
+  victim: ['저는', '피해를 입었습니다.', '그 학생이', '에서', '했습니다.', '두렵고 무서웠습니다.', '선생님께 알리고 싶었습니다.'],
+  perp: ['저는', '사실입니다.', '미안하게 생각합니다.', '오해가 있었습니다.', '장난이었습니다.', '깊이 반성합니다.', '순간 화가 나서 그랬습니다.'],
+  witness: ['저는', '목격했습니다.', '를 보았습니다.', '그때', '옆에 있었습니다.', '가해학생이', '피해학생이']
+};
 
 export default function Statements() {
   const navigate = useNavigate();
@@ -193,7 +194,12 @@ export default function Statements() {
           {/* Tabs */}
           <div className="flex gap-2">
             {tabConfig.map(t => (
-              <button key={t.key} onClick={() => set('activeTab', t.key)}
+              <button key={t.key} 
+                onClick={() => {
+                  const updated = { ...form, activeTab: t.key };
+                  setForm(updated);
+                  updateStatements(updated); // 탭 전환 시 자동 저장
+                }}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm border-2 transition-all
                   ${form.activeTab === t.key ? t.activeBg + ' border-transparent shadow-md' : 'border-outline-variant text-on-surface-variant hover:border-primary/40'}`}>
                 <span className="material-symbols-outlined text-[18px]">{t.icon}</span>
@@ -212,7 +218,7 @@ export default function Statements() {
               <span className="text-xs text-on-surface-variant">{currentText.length}자</span>
             </div>
             <div className="flex flex-wrap gap-1.5 mb-3">
-              {GUIDE_PHRASES.map(p => (
+              {(GUIDE_PHRASES[activeTab.key] || []).map(p => (
                 <button key={p} onClick={() => insertGuide(p)}
                   className="text-xs px-2.5 py-1 bg-primary/10 text-primary rounded-full hover:bg-primary hover:text-white transition-all">
                   + {p}

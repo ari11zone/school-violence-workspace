@@ -35,6 +35,7 @@ export default function Deliberation() {
     measures: [], minutes: '', decision: null,
     deliberationDate: '', chairperson: '', completed: false,
   });
+  const [showFullStatement, setShowFullStatement] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -158,23 +159,38 @@ export default function Deliberation() {
 
       {/* 진술 요약 (Statements 데이터 전달) */}
       {stmts && (stmts.victimStatement || stmts.perpetratorStatement) && (
-        <div className="mb-6 grid grid-cols-2 gap-4">
-          {stmts.victimStatement && (
-            <div className="bg-error/5 border border-error/20 rounded-2xl p-4">
-              <p className="text-xs font-bold text-error mb-2 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px]">person</span>피해(관련)학생 진술 요약
-              </p>
-              <p className="text-xs text-on-surface leading-relaxed line-clamp-3">{stmts.victimStatement}</p>
-            </div>
-          )}
-          {stmts.perpetratorStatement && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-              <p className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px]">person_alert</span>가해(관련)학생 진술 요약
-              </p>
-              <p className="text-xs text-on-surface leading-relaxed line-clamp-3">{stmts.perpetratorStatement}</p>
-            </div>
-          )}
+        <div className="mb-6">
+          <div className="grid grid-cols-2 gap-4">
+            {stmts.victimStatement && (
+              <div className="bg-error/5 border border-error/20 rounded-2xl p-4 relative">
+                <p className="text-xs font-bold text-error mb-2 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[14px]">person</span>피해(관련)학생 진술 요약
+                </p>
+                <p className={`text-xs text-on-surface leading-relaxed ${showFullStatement ? '' : 'line-clamp-3'}`}>
+                  {stmts.victimStatement}
+                </p>
+              </div>
+            )}
+            {stmts.perpetratorStatement && (
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 relative">
+                <p className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[14px]">person_alert</span>가해(관련)학생 진술 요약
+                </p>
+                <p className={`text-xs text-on-surface leading-relaxed ${showFullStatement ? '' : 'line-clamp-3'}`}>
+                  {stmts.perpetratorStatement}
+                </p>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => setShowFullStatement(prev => !prev)}
+            className="mt-2 text-xs text-primary font-bold hover:underline flex items-center justify-center w-full"
+          >
+            {showFullStatement ? '간략히 보기' : '전체 보기'}
+            <span className="material-symbols-outlined text-[14px] ml-1">
+              {showFullStatement ? 'expand_less' : 'expand_more'}
+            </span>
+          </button>
         </div>
       )}
 

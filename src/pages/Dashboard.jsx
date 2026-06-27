@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
 
@@ -27,6 +27,14 @@ export default function Dashboard() {
   // 검색 & 필터 상태
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setShowNewModal(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // 실제 D-Day 계산 (48시간 기준)
   function calcDDay(createdAt) {
@@ -248,7 +256,15 @@ export default function Dashboard() {
             </tr>
           </thead>
           <tbody className="divide-y divide-outline-variant">
-            {filteredCases.length === 0 ? (
+            {cases.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-5 py-16 text-center text-on-surface-variant">
+                  <span className="material-symbols-outlined text-[48px] block mb-3 text-outline-variant">folder_open</span>
+                  <p className="text-base font-bold text-on-surface mb-1">등록된 사안이 없습니다.</p>
+                  <p className="text-sm">우측 상단의 "새 사안 등록" 버튼을 눌러 첫 사안을 등록해보세요.</p>
+                </td>
+              </tr>
+            ) : filteredCases.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-5 py-12 text-center text-on-surface-variant text-sm">
                   <span className="material-symbols-outlined text-[40px] block mb-2 text-outline-variant">search_off</span>
@@ -259,7 +275,7 @@ export default function Dashboard() {
               const cfg = statusConfig[c.status] || statusConfig.closed;
               const prog = progressMap[c.status] || 0;
               return (
-                <tr key={c.id} className={`hover:bg-surface-container-low transition-colors ${i % 2 === 1 ? 'bg-surface-container-lowest' : 'bg-white'}`}>
+                <tr key={c.id} onClick={() => handleContinue(c)} className={`hover:bg-surface-container-low transition-colors cursor-pointer ${i % 2 === 1 ? 'bg-surface-container-lowest' : 'bg-white'}`}>
                   <td className="px-5 py-4 font-bold text-primary text-sm">{c.id}</td>
                   <td className="px-5 py-4 text-sm">{c.investigation.incidentDate || c.createdAt}</td>
                   <td className="px-5 py-4 text-sm">{(c.investigation.incidentType || '').replace(/,/g, ' · ') || '—'}</td>
@@ -292,7 +308,8 @@ export default function Dashboard() {
                         <span className="text-xs text-on-surface-variant font-medium px-3 py-1.5">종결됨</span>
                       )}
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           if (window.confirm(`${c.id}호 사안을 정말로 삭제하시겠습니까?`)) {
                             deleteCase(c.id);
                             showToast('사안이 삭제되었습니다.', 'success');
@@ -350,7 +367,8 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="space-y-4 mb-6">
+            <form onSubmit={e => { e.preventDefault(); handleCreateCase(); }}>
+              <div className="space-y-4 mb-6">
               <div>
                 <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
                   사안 유형 <span className="text-error">*</span>
@@ -389,57 +407,65 @@ export default function Dashboard() {
                   </p>
                 )}
               </div>
-              <div>
-                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">피해(관련)학생 이름 <span className="text-error">*</span></label>
-                <input
-                  type="text"
-                  value={newVictim}
-                  onChange={e => setNewVictim(e.target.value)}
-                  placeholder="예: 김○○"
-                  className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">발생 일자</label>
-                  <input
-                    type="date"
-                    value={newDate}
-                    onChange={e => setNewDate(e.target.value)}
-                    className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">발생 시각</label>
-                  <input
-                    type="time"
-                    value={newTime}
-                    onChange={e => setNewTime(e.target.value)}
-                    className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">발생 장소</label>
-                <input
-                  type="text"
-                  value={newLocation}
-                  onChange={e => setNewLocation(e.target.value)}
-                  placeholder="예: 3학년 2반 교실"
-                  className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-            </div>
 
-            <div className="flex gap-3">
-              <button onClick={handleCloseModal} className="flex-1 py-3 border border-outline-variant rounded-xl text-on-surface-variant font-bold hover:bg-surface-container transition-all">
-                취소
-              </button>
-              <button onClick={handleCreateCase} className="flex-1 py-3 bg-primary text-white rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all shadow-md">
-                등록 후 조사 시작
-                <span className="material-symbols-outlined text-[16px] ml-1 align-middle">arrow_forward</span>
-              </button>
-            </div>
+                <div>
+                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">피해(관련)학생 이름 <span className="text-error">*</span></label>
+                  <input
+                    type="text"
+                    value={newVictim}
+                    onChange={e => setNewVictim(e.target.value)}
+                    placeholder="예: 김○○"
+                    className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">발생 일자</label>
+                    <input
+                      type="date"
+                      value={newDate}
+                      onChange={e => setNewDate(e.target.value)}
+                      className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">발생 시각</label>
+                    <input
+                      type="time"
+                      value={newTime}
+                      onChange={e => setNewTime(e.target.value)}
+                      className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">발생 장소</label>
+                  <input
+                    type="text"
+                    value={newLocation}
+                    onChange={e => setNewLocation(e.target.value)}
+                    placeholder="예: 3학년 2반 교실"
+                    className="w-full border border-outline-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="flex-1 py-3 bg-surface-container text-on-surface rounded-xl text-sm font-bold hover:bg-surface-container-high transition-all"
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 transition-all shadow-md"
+                >
+                  사안 생성 및 조사 시작
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
