@@ -330,10 +330,11 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {[
           { icon: 'description', label: '표준 서식 다운로드', sub: '보고서·진술서·동의서 양식', action: () => window.open('https://drive.google.com/file/d/13oYNhLAbN8aZi9pOSTcnoW_0yR4_y4Wl/view?usp=sharing', '_blank') },
-          { icon: 'book_2', label: '법령 및 매뉴얼', sub: '학교폭력예방법 조문 안내', action: () => window.open('https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=168327', '_blank') },
+          { icon: 'book_2', label: '법령 및 매뉴얼', sub: '학교폭력예방법 조문 안내', action: () => window.open('https://www.law.go.kr/lsInfoP.do?lsId=009620&ancYnChk=0#0000', '_blank') },
+          { icon: 'smart_toy', label: '대한민국 법률 AI 챗봇', sub: 'AI 법률 상담 서비스', action: () => window.open('https://korean-law-mcp-mu.vercel.app/', '_blank') },
           { icon: 'support_agent', label: '전문 상담 연결', sub: '117 학교폭력 신고센터', action: () => window.open('tel:117') },
         ].map(q => (
           <button

@@ -45,6 +45,15 @@ export default function Layout() {
     })
   );
 
+  const [systemTitle, setSystemTitle] = useState(() => {
+    const saved = localStorage.getItem('sv_system_title');
+    return saved || '학폭 사안처리 시스템';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('sv_system_title', systemTitle);
+  }, [systemTitle]);
+
   // deadline을 useMemo로 파생 - 현재사안 createdAt 기준 실시간 계산
   // (today 상태가 1분마다 갱신되뮼서 재렌더링됨)
   const deadline = useMemo(
@@ -72,11 +81,14 @@ export default function Layout() {
             <span className="material-symbols-outlined text-white text-[18px]">shield_person</span>
           </div>
           <div>
-            <span className="font-bold text-white text-base tracking-tight">
-              {new URLSearchParams(window.location.search).get('school') && new URLSearchParams(window.location.search).get('school') !== 'default'
-                ? `${new URLSearchParams(window.location.search).get('school')}학교 ` 
-                : ''}학폭 사안처리 시스템
-            </span>
+            <input
+              type="text"
+              value={systemTitle}
+              onChange={(e) => setSystemTitle(e.target.value)}
+              className="font-bold text-white text-base tracking-tight bg-transparent border-b border-transparent hover:border-white/30 focus:border-white focus:outline-none transition-colors px-1 placeholder:text-white/50"
+              style={{ width: `${Math.max(systemTitle.length + 1, 10)}ch` }}
+              placeholder="시스템 이름 입력"
+            />
             {currentCase && (
               <span className="ml-3 text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">
                 현재 사안: {currentCase.id}
